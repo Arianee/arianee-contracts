@@ -2,7 +2,9 @@
 
 <p align="center">
     <b>The @arianee/contracts repository houses the smart contracts that drive the Arianee Protocol—a decentralized, open-source solution for creating tokenized digital product passports. While these contracts are central to the protocol, they represent only part of its broader infrastructure. Built on a multi-EVM foundation, the protocol empowers brands to manage product identities, track lifecycle events, and directly engage with product owners.</b>
-    <img src="https://cdn.prod.website-files.com/63dd075a9e277ca2c4b0244c/662b5abddfe83c59ee4135bb_USER%20OWNED%20DATA-p-800.png" width="600" />
+</p>
+<p align="center">
+    <img src="https://cdn.prod.website-files.com/63dd075a9e277ca2c4b0244c/662b5abddfe83c59ee4135bb_USER%20OWNED%20DATA-p-800.png" width="500" />
 </p>
 
 ## Key Features
