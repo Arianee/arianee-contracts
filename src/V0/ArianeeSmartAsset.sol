@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-// Stateless Libraries
+// Stateless
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { IArianeeSmartAsset } from "./Interfaces/IArianeeSmartAsset.sol";
+import { IArianeeStore } from "./Interfaces/IArianeeStore.sol";
+import { IArianeeWhitelist } from "./Interfaces/IArianeeWhitelist.sol";
 import {
-    ROLE_SMART_ASSET_MANAGER,
+    ROLE_ADMIN,
+    ROLE_ARIANEE_STORE,
     ERC721_NAME,
     ERC721_SYMBOL,
     URI_BASE,
@@ -19,8 +23,9 @@ import {
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // Utils
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+// Meta Transactions
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 // Access
-import { Ownable2StepUpgradeable } from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 // ERC721
 import { ERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
@@ -29,15 +34,6 @@ import { ERC721PausableUpgradeable } from
 import { ERC721EnumerableUpgradeable } from
     "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
 
-/**
- * TODO
- * - Add MetaTx (Forwarder)
- * - Add Store and Whitelist contracts
- * - Check if the `approve` calls are needed
- * - Check if the `canTransfer` and `canDestroy` calls are needed (maybe move the logic here)
- */
-
-// TODO: Move struct and events to a separate file
 struct Cert {
     address tokenIssuer;
     uint256 tokenCreationDate;
@@ -45,57 +41,23 @@ struct Cert {
 }
 
 /**
- * @notice This emits when a new address is set for a given type (e.g. storeAddress, whitelistAddress)
+ * TODO
+ * - Check if the `approve` calls are needed
+ * - Check if the `canTransfer` and `canDestroy` calls are needed (maybe move the logic here)
+ * - Check if we change the soulbound logic to be per token instead of per contract (single-instance)
+ * - setWhitelistAddress is not consistent with other contracts (not present)
  */
-event SetAddress(string _addressType, address _newAddress);
 
 /**
- * @notice This emits when a SmartAsset is hydrated
+ * @title ArianeeSmartAsset
+ * @notice This contract is the ERC721 implementation of the Arianee Protocol. An ERC721 token inside the Arianee ecosystem is called a SmartAsset.
+ * @dev https://docs.arianee.org
+ * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
-event Hydrated(
-    uint256 indexed _tokenId,
-    bytes32 indexed _imprint,
-    string _uri,
-    address _initialKey,
-    uint256 _tokenRecoveryTimestamp,
-    bool _initialKeyIsRequestKey,
-    uint256 _tokenCreation
-);
-
-/**
- * @notice This emits when an issuer request a SmartAsset recovery
- */
-event RecoveryRequestUpdated(uint256 indexed _tokenId, bool _active);
-/**
- * @notice This emits when a SmartAsset is recovered to the issuer
- */
-
-event TokenRecovered(uint256 indexed _token);
-
-/**
- * @notice This emits when a SmartAsset's URI is udpated
- */
-event TokenURIUpdated(uint256 indexed _tokenId, string URI);
-
-/**
- * @notice This emits when a access is added
- */
-event TokenAccessAdded(uint256 indexed _tokenId, address _encryptedTokenKey, bool _enable, uint256 _tokenType); // TODO: Do we rename this to `_accessType` ?
-
-/**
- * @notice This emits when a access is destroyed
- */
-event TokenDestroyed(uint256 indexed _tokenId);
-
-/**
- * @notice This emits when the base URI is udpated
- */
-event SetNewUriBase(string _newUriBase);
-
 contract ArianeeSmartAsset is
+    IArianeeSmartAsset,
     Initializable,
-    ContextUpgradeable,
-    Ownable2StepUpgradeable,
+    ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
     ERC721Upgradeable,
     ERC721PausableUpgradeable,
@@ -105,6 +67,14 @@ contract ArianeeSmartAsset is
 
     /// @custom:storage-location erc7201:arianeesmartasset.storage.v0
     struct ArianeeSmartAssetStorageV0 {
+        /**
+         * @notice The ArianeeStore contract
+         */
+        IArianeeStore store;
+        /**
+         * @notice The ArianeeStore contract
+         */
+        IArianeeWhitelist whitelist;
         /**
          * @notice Mapping from SmartAsset ID to URI
          */
@@ -137,10 +107,6 @@ contract ArianeeSmartAsset is
          * @notice Flag indicating if the SmartAsset is soulbound (non-transferable)
          */
         bool isSoulbound;
-        /**
-         * @notice Mapping from a role to its activation status (true = activated, false = deactivated)
-         */
-        mapping(bytes32 => bool) roleToActivation;
     }
 
     // keccak256(abi.encode(uint256(keccak256("arianeesmartasset.storage.v0")) - 1)) & ~bytes32(uint256(0xff))
@@ -151,23 +117,6 @@ contract ArianeeSmartAsset is
         assembly {
             $.slot := ArianeeSmartAssetStorageV0Location
         }
-    }
-
-    // TODO: IArianeeWhitelist public arianeeWhitelist;
-    // TODO: IArianeeStore public store;
-
-    /**
-     * @notice Modifier that checks that an account has a specific role, pass if the role is deactivated
-     * @param role Role to check
-     */
-    modifier onlyActivatedRole(
-        bytes32 role
-    ) {
-        ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
-        if ($.roleToActivation[role] == true) {
-            _checkRole(role);
-        }
-        _;
     }
 
     /**
@@ -192,33 +141,35 @@ contract ArianeeSmartAsset is
         _;
     }
 
+    /**
+     * @dev You can change the trusted forwarder after initial deployment by overriding the `ERC2771ContextUpgradeable.trustedForwarder()` function
+     */
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
+    constructor(
+        address _trustedForwarder
+    ) ERC2771ContextUpgradeable(_trustedForwarder) {
         _disableInitializers();
     }
 
-    function initialize(address _arianeeWhitelistAddress, address _forwarder, bool _isSoulbound) public initializer {
-        __Ownable_init_unchained(msg.sender);
+    function initialize(
+        address _initialAdmin,
+        address _storeAddress,
+        address _whitelistAddress,
+        bool _isSoulbound
+    ) public initializer {
         __Pausable_init_unchained();
         __ERC721_init_unchained(ERC721_NAME, ERC721_SYMBOL);
 
+        _grantRole(ROLE_ADMIN, _initialAdmin);
+
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
-        $.isSoulbound = _isSoulbound;
+        $.isSoulbound = _isSoulbound; // TODO: Change the soulbound logic to be per token instead of per contract (single-instance)
 
-        setWhitelistAddress(_arianeeWhitelistAddress);
+        setStoreAddress(_storeAddress);
+        setWhitelistAddress(_whitelistAddress);
+
         setUriBase(URI_BASE);
-
-        activateRole(ROLE_SMART_ASSET_MANAGER);
-
-        // TODO: _setTrustedForwarder(_forwarder);
     }
-
-    // TODO: Forwarder
-    // function updateForwarderAddress(
-    //     address _forwarder
-    // ) external onlyOwner {
-    //     _setTrustedForwarder(_forwarder);
-    // }
 
     /**
      * @notice Mint a new SmartAsset with a given ID
@@ -226,10 +177,7 @@ contract ArianeeSmartAsset is
      * @param _tokenId SmartAsset ID
      * @param _to Address of the new owner
      */
-    function reserveToken(
-        uint256 _tokenId,
-        address _to
-    ) external onlyActivatedRole(ROLE_SMART_ASSET_MANAGER) whenNotPaused {
+    function reserveToken(uint256 _tokenId, address _to) external onlyRole(ROLE_ARIANEE_STORE) whenNotPaused {
         _mint(_to, _tokenId);
 
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
@@ -239,10 +187,10 @@ contract ArianeeSmartAsset is
     /**
      * @notice Hydrate (populate) a SmartAsset with a given set of data
      * @dev Must be called by an authorized address
-     * @dev Must be called by an operator
+     * @dev Must have an `_issuer` param that is an operator of the SmartAsset
      * @dev Can only be called once
      * @param _tokenId SmartAsset ID
-     * @param _imprint Imprint
+     * @param _imprint Imprint (hash of the SmartAsset data)
      * @param _uri URI
      * @param _initialKey Public key of the initial access (derived from a private key or a passphrase)
      * @param _tokenRecoveryTimestamp Maximum timestamp for the recovery of the SmartAsset by the issuer throught the `recoverTokenToIssuer` function
@@ -257,7 +205,7 @@ contract ArianeeSmartAsset is
         uint256 _tokenRecoveryTimestamp,
         bool _initialKeyIsRequestKey,
         address _issuer
-    ) public onlyActivatedRole(ROLE_SMART_ASSET_MANAGER) isOperator(_tokenId, _issuer) whenNotPaused {
+    ) public onlyRole(ROLE_ARIANEE_STORE) isOperator(_tokenId, _issuer) whenNotPaused {
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         require(!($.idToCertificate[_tokenId].tokenCreationDate > 0), "ArianeeSmartAsset: SmartAsset already hydrated");
 
@@ -266,7 +214,7 @@ contract ArianeeSmartAsset is
         $.idToImprint[_tokenId] = _imprint;
         $.idToUri[_tokenId] = _uri;
 
-        // TODO: arianeeWhitelist.addWhitelistedAddress(_tokenId, _issuer);
+        $.whitelist.addWhitelistedAddress(_tokenId, _issuer);
 
         if (_initialKeyIsRequestKey) {
             $.idToAccess[_tokenId][ACCESS_TYPE_TRANSFER] = _initialKey;
@@ -300,7 +248,7 @@ contract ArianeeSmartAsset is
         bool _keepCurrentAccess,
         address _newOwner,
         bytes calldata _signature
-    ) external onlyActivatedRole(ROLE_SMART_ASSET_MANAGER) whenNotPaused {
+    ) external onlyRole(ROLE_ARIANEE_STORE) whenNotPaused {
         require(
             isAccessValid(_tokenId, _hash, ACCESS_TYPE_TRANSFER, _signature),
             "ArianeeSmartAsset: Invalid `_hash` or `_signature`"
@@ -342,7 +290,7 @@ contract ArianeeSmartAsset is
         bool _enable,
         uint256 _accessType
     ) external isOperator(_tokenId, _msgSender()) whenNotPaused {
-        require(_accessType > 0, "ArianeeSmartAsset: Invalid access type");
+        require(_accessType > 0, "ArianeeSmartAsset: Invalid `_accessType`");
 
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
 
@@ -403,12 +351,12 @@ contract ArianeeSmartAsset is
 
     /**
      * @notice Validate a recovery request and transfer the SmartAsset to the issuer
-     * @dev Can be only called if a recovery request is active and by the owner of this contract
+     * @dev Can be only called if a recovery request is active and by the `ROLE_ADMIN` of this contract
      * @param _tokenId SmartAsset ID
      */
     function validRecoveryRequest(
         uint256 _tokenId
-    ) external onlyOwner {
+    ) external onlyRole(ROLE_ADMIN) {
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         require(
             $.idToRecoveryRequest[_tokenId] == true, "ArianeeSmartAsset: No active recovery request for this SmartAsset"
@@ -448,7 +396,8 @@ contract ArianeeSmartAsset is
     function destroy(
         uint256 _tokenId
     ) external whenNotPaused {
-        // require(store.canDestroy(_tokenId, _msgSender(), isSoulbound)); // TODO: Do we keep this, maybe we move this logic here ?
+        // TODO: Do we keep this, maybe we move this logic here ?
+        // require(store.canDestroy(_tokenId, _msgSender(), isSoulbound));
 
         _burn(_tokenId);
 
@@ -573,7 +522,7 @@ contract ArianeeSmartAsset is
      */
     function setUriBase(
         string memory _newURIBase
-    ) public onlyOwner {
+    ) public onlyRole(ROLE_ADMIN) {
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         $.baseURI = _newURIBase;
 
@@ -586,8 +535,8 @@ contract ArianeeSmartAsset is
      */
     function setStoreAddress(
         address _storeAddress
-    ) external onlyOwner {
-        // TODO: store = IArianeeStore(address(_storeAddress));
+    ) public onlyRole(ROLE_ADMIN) {
+        _getArianeeSmartAssetStorageV0().store = IArianeeStore(_storeAddress);
         emit SetAddress("storeAddress", _storeAddress);
     }
 
@@ -597,41 +546,9 @@ contract ArianeeSmartAsset is
      */
     function setWhitelistAddress(
         address _whitelistAddres
-    ) public onlyOwner {
-        // TODO: arianeeWhitelist = IArianeeWhitelist(address(_whitelistAddres));
+    ) public onlyRole(ROLE_ADMIN) {
+        _getArianeeSmartAssetStorageV0().whitelist = IArianeeWhitelist(_whitelistAddres);
         emit SetAddress("whitelistAddress", _whitelistAddres);
-    }
-
-    /**
-     * @notice Activate a role (will be checked by the `onlyActivatedRole` modifier)
-     * @param role Role to activate
-     */
-    function activateRole(
-        bytes32 role
-    ) public onlyOwner {
-        ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
-        $.roleToActivation[role] = true;
-    }
-
-    /**
-     * @notice Deactivate a role (will always pass the `onlyActivatedRole` modifier)
-     * @param role Role to deactivate
-     */
-    function deactivateRole(
-        bytes32 role
-    ) public onlyOwner {
-        ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
-        $.roleToActivation[role] = false;
-    }
-
-    /**
-     * @notice Returns the activation status of a given role
-     * @param role Role to check
-     */
-    function isRoleActive(
-        bytes32 role
-    ) public view returns (bool) {
-        return _getArianeeSmartAssetStorageV0().roleToActivation[role];
     }
 
     // Public Overrides
@@ -654,19 +571,23 @@ contract ArianeeSmartAsset is
      * @dev Require the `IArianeeStore` contract to approve the transfer
      * @dev Dispatch the rewards at the first transfer of a SmartAsset
      */
-    function transferFrom(address from, address to, uint256 tokenId) public override (ERC721Upgradeable, IERC721) {
-        require(
-            // store.canTransfer(from, _to, tokenId, isSoulbound),
-            true,
-            "ArianeeSmartAsset: Transfer not allowed (`canTransfer(address, address, uint256, bool)` failed)"
-        ); // TODO: Do we keep this, maybe we move this logic here ?
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId
+    ) public override (ERC721Upgradeable, IERC721, IArianeeSmartAsset) whenNotPaused {
+        // TODO: Do we keep this, maybe we move this logic here ?
+        // require(
+        //     store.canTransfer(_from, _to, _tokenId, isSoulbound),
+        //     "ArianeeSmartAsset: Transfer not allowed (`canTransfer(address, address, uint256, bool)` failed)"
+        // );
 
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         if ($.isSoulbound) {
-            address tokenOwner = _requireOwned(tokenId);
-            require(tokenOwner == from, "ArianeeSmartAsset: Transfer not allowed (`tokenOwner` != `from`)");
+            address tokenOwner = _requireOwned(_tokenId);
+            require(tokenOwner == _from, "ArianeeSmartAsset: Transfer not allowed (`tokenOwner` != `_from`)");
 
-            address tokenIssuer = $.idToCertificate[tokenId].tokenIssuer;
+            address tokenIssuer = $.idToCertificate[_tokenId].tokenIssuer;
 
             // If the owner is NOT the issuer, the SmartAsset is soulbound and the transfer can be made only by the issuer to change the owner if needed
             if (tokenOwner != tokenIssuer) {
@@ -681,13 +602,35 @@ contract ArianeeSmartAsset is
             */
         }
 
-        super.transferFrom(from, to, tokenId);
-        // TODO: arianeeWhitelist.addWhitelistedAddress(_tokenId, _to);
+        super.transferFrom(_from, _to, _tokenId);
+        $.whitelist.addWhitelistedAddress(_tokenId, _to);
 
-        if (_isFirstTransfer(tokenId)) {
-            _getArianeeSmartAssetStorageV0().idToFirstTransfer[tokenId] = false;
-            // TODO: store.dispatchRewardsAtFirstTransfer(_tokenId, _to);
+        if (_isFirstTransfer(_tokenId)) {
+            _getArianeeSmartAssetStorageV0().idToFirstTransfer[_tokenId] = false;
+            $.store.dispatchRewardsAtFirstTransfer(_tokenId, _to);
         }
+    }
+
+    function approve(
+        address _approved,
+        uint256 _tokenId
+    ) public override (ERC721Upgradeable, IERC721, IArianeeSmartAsset) {
+        super.approve(_approved, _tokenId);
+    }
+
+    function ownerOf(
+        uint256 tokenId
+    ) public view override (ERC721Upgradeable, IERC721, IArianeeSmartAsset) returns (address) {
+        return super.ownerOf(tokenId);
+    }
+
+    function safeTransferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId,
+        bytes memory _data
+    ) public override (ERC721Upgradeable, IERC721, IArianeeSmartAsset) {
+        super.safeTransferFrom(_from, _to, _tokenId, _data);
     }
 
     function supportsInterface(
@@ -726,4 +669,74 @@ contract ArianeeSmartAsset is
     ) internal override (ERC721EnumerableUpgradeable, ERC721Upgradeable) {
         super._increaseBalance(account, amount);
     }
+
+    function _contextSuffixLength()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
+    }
+
+    function _msgData()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _msgSender() internal view override (ERC2771ContextUpgradeable, ContextUpgradeable) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
+    }
 }
+
+/**
+ * @notice This emits when a new address is set for a given type (e.g. storeAddress, whitelistAddress)
+ */
+event SetAddress(string _addressType, address _newAddress);
+
+/**
+ * @notice This emits when a SmartAsset is hydrated
+ */
+event Hydrated(
+    uint256 indexed _tokenId,
+    bytes32 indexed _imprint,
+    string _uri,
+    address _initialKey,
+    uint256 _tokenRecoveryTimestamp,
+    bool _initialKeyIsRequestKey,
+    uint256 _tokenCreation
+);
+
+/**
+ * @notice This emits when an issuer request a SmartAsset recovery
+ */
+event RecoveryRequestUpdated(uint256 indexed _tokenId, bool _active);
+
+/**
+ * @notice This emits when a SmartAsset is recovered to the issuer
+ */
+event TokenRecovered(uint256 indexed _token);
+
+/**
+ * @notice This emits when a SmartAsset's URI is udpated
+ */
+event TokenURIUpdated(uint256 indexed _tokenId, string URI);
+
+/**
+ * @notice This emits when a access is added
+ */
+event TokenAccessAdded(uint256 indexed _tokenId, address _encryptedTokenKey, bool _enable, uint256 _tokenType); // TODO: Do we rename this to `_accessType` ?
+
+/**
+ * @notice This emits when a access is destroyed
+ */
+event TokenDestroyed(uint256 indexed _tokenId);
+
+/**
+ * @notice This emits when the base URI is udpated
+ */
+event SetNewUriBase(string _newUriBase);

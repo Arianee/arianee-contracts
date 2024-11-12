@@ -26,11 +26,6 @@ quote_style = "double"
 number_underscore = "thousands"
 
 [fuzz]
-# runs = 1000000
+runs = 256
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
-
-# Some notes for Maxime when adding CI capabilities:
-# --fail-fast (Stop running tests after the first failur) can be a good option to add when running tests in CI
-# --fuzz-runs (Number of runs for each fuzz test) can be set to a higher number in CI to make sure the tests are more reliable
-# -v[vvvv] (Verbose output) can be useful to see more details about the tests in CI
