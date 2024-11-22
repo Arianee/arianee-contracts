@@ -36,7 +36,8 @@ interface IArianeeSmartAsset {
         address _initialKey,
         uint256 _tokenRecoveryTimestamp,
         bool _initialKeyIsRequestKey,
-        address _issuer
+        address _issuer,
+        bool _soulbound // TODO: Breaking change, it's a new param, we'll probably need to change this in the SDK (we'll see if it's used)
     ) external;
 
     function requestToken(

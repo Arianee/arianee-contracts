@@ -6,10 +6,7 @@ import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
-    ArianeeSmartAssetUpdate,
-    SmartAssetUpdated,
-    SmartAssetUpdateReaded,
-    StoreAddressUpdated
+    ArianeeSmartAssetUpdate, SmartAssetUpdated, SmartAssetUpdateReaded
 } from "@arianee/V0/ArianeeSmartAssetUpdate.sol";
 import { IArianeeSmartAsset } from "@arianee/V0/Interfaces/IArianeeSmartAsset.sol";
 import { ROLE_ADMIN, ROLE_ARIANEE_STORE } from "@arianee/V0/Constants.sol";
@@ -172,29 +169,6 @@ contract ArianeeSmartAssetUpdateTest is Test {
             )
         );
         arianeeSmartAssetUpdateProxy.readUpdateSmartAsset(tokenId, from);
-        vm.stopPrank();
-    }
-
-    // Update ArianeeStore address
-
-    function test_updateStoreAddress(
-        address newStoreAddr
-    ) public {
-        vm.startPrank(admin);
-        vm.expectEmit();
-        emit StoreAddressUpdated(newStoreAddr);
-        arianeeSmartAssetUpdateProxy.updateStoreAddress(newStoreAddr);
-        vm.stopPrank();
-    }
-
-    function test_setStoreAddress_err_onlyAdmin(
-        address newStoreAddr
-    ) public {
-        vm.startPrank(unknown);
-        vm.expectRevert(
-            abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
-        );
-        arianeeSmartAssetUpdateProxy.updateStoreAddress(newStoreAddr);
         vm.stopPrank();
     }
 }

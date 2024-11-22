@@ -23,12 +23,6 @@ struct Update {
 }
 
 /**
- * TODO
- * - Check if the `canOperate` call is needed
- * - Are updates incremental, what's the flow with the emitted events?
- */
-
-/**
  * @title ArianeeSmartAssetUpdate
  * @notice This contract manage the updates of the SmartAssets. Each update is incremental on top of the parent SmartAsset and the previous update.
  * @dev https://docs.arianee.org
@@ -92,7 +86,7 @@ contract ArianeeSmartAssetUpdate is
 
         ArianeeSmartAssetUpdateStorageV0 storage $ = _getArianeeSmartAssetUpdateStorageV0();
         $.smartAsset = IArianeeSmartAsset(_smartAssetAddress);
-        updateStoreAddress(_storeAddress);
+        $.store = IArianeeStore(_storeAddress);
     }
 
     /**
@@ -191,17 +185,6 @@ contract ArianeeSmartAssetUpdate is
             (isUpdated, $.idToLastUpdate[_tokenId].imprint, originalImprint, $.idToLastUpdate[_tokenId].updateTimestamp);
     }
 
-    /**
-     * @notice Set the address of the store contract
-     * @param _storeAddress Address of the store contract
-     */
-    function updateStoreAddress(
-        address _storeAddress
-    ) public onlyRole(ROLE_ADMIN) {
-        _getArianeeSmartAssetUpdateStorageV0().store = IArianeeStore(_storeAddress);
-        emit StoreAddressUpdated(_storeAddress);
-    }
-
     // Internal Overrides
 
     function _contextSuffixLength()
@@ -236,8 +219,3 @@ event SmartAssetUpdated(uint256 indexed _tokenId, bytes32 indexed _imprint);
  * @dev This emits when a certificate update is read
  */
 event SmartAssetUpdateReaded(uint256 indexed _tokenId);
-
-/**
- * @dev This emits when the store address is updated
- */
-event StoreAddressUpdated(address indexed _newStoreAddress);

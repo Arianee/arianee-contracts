@@ -16,8 +16,7 @@ import {
     RecoveryRequestUpdated,
     TokenURIUpdated,
     TokenDestroyed,
-    SetNewUriBase,
-    SetAddress
+    SetNewUriBase
 } from "@arianee/V0/ArianeeSmartAsset.sol";
 import { IArianeeStore } from "@arianee/V0/Interfaces/IArianeeStore.sol";
 import { IArianeeWhitelist } from "@arianee/V0/Interfaces/IArianeeWhitelist.sol";
@@ -32,11 +31,6 @@ import {
 } from "@arianee/V0/Constants.sol";
 import { ArianeeUtils } from "../Utils.sol";
 
-/**
- * TODO
- * - Make another test file for Soulbound cases (or in the same if we choose to have a per-token soulbound feature)
- * - Add a test for `transferFrom` in the Soulbound case
- */
 contract ArianeeSmartAssetTest is Test {
     using Strings for uint256;
 
@@ -61,7 +55,7 @@ contract ArianeeSmartAssetTest is Test {
         address arianeeSmartAssetProxyAddr = Upgrades.deployTransparentProxy(
             "ArianeeSmartAsset.sol",
             proxyAdmin,
-            abi.encodeCall(ArianeeSmartAsset.initialize, (admin, store, whitelist, false)), // Only not soulbound for now
+            abi.encodeCall(ArianeeSmartAsset.initialize, (admin, store, whitelist)),
             opts
         );
         arianeeSmartAssetProxy = ArianeeSmartAsset(arianeeSmartAssetProxyAddr);
@@ -138,7 +132,7 @@ contract ArianeeSmartAssetTest is Test {
             tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, block.timestamp
         );
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         assertEq(arianeeSmartAssetProxy.issuerOf(tokenId), issuer1);
@@ -146,6 +140,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.tokenRecoveryDate(tokenId), tokenRecoveryTimestamp);
         assertEq(arianeeSmartAssetProxy.tokenImprint(tokenId), imprint);
         assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_VIEW), initialKey);
+        assertEq(arianeeSmartAssetProxy.isSoulbound(tokenId), false);
         if (initialKeyIsRequestKey) {
             assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_TRANSFER), initialKey);
         }
@@ -170,7 +165,7 @@ contract ArianeeSmartAssetTest is Test {
 
         vm.expectRevert("ArianeeSmartAsset: Not an operator");
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
     }
@@ -192,12 +187,12 @@ contract ArianeeSmartAssetTest is Test {
             tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, block.timestamp
         );
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         vm.expectRevert("ArianeeSmartAsset: SmartAsset already hydrated");
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
     }
@@ -222,7 +217,7 @@ contract ArianeeSmartAssetTest is Test {
             )
         );
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
     }
@@ -247,7 +242,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr, uint256 initialKeyPk) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         bytes32 requestTokenMsgHash = ArianeeUtils.getRequestTokenMsgHash(tokenId, newOwner);
@@ -281,7 +276,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr, uint256 initialKeyPk) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = false; // Initial key is not the request key
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         bytes32 requestTokenMsgHash = ArianeeUtils.getRequestTokenMsgHash(tokenId, newOwner);
@@ -309,7 +304,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr, uint256 initialKeyPk) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         bytes32 requestTokenMsgHash = ArianeeUtils.getRequestTokenMsgHash(tokenId, newOwner);
@@ -338,7 +333,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr, uint256 initialKeyPk) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
 
         bytes32 requestTokenMsgHash = ArianeeUtils.getRequestTokenMsgHash(tokenId, newOwner);
@@ -373,7 +368,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr, uint256 initialKeyPk) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -407,7 +402,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr,) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_TRANSFER), initialKeyAddr); // Assert that initial key is the request key
         vm.stopPrank();
@@ -434,7 +429,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr,) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_TRANSFER), initialKeyAddr); // Assert that initial key is the request key
         vm.stopPrank();
@@ -461,7 +456,7 @@ contract ArianeeSmartAssetTest is Test {
         (address initialKeyAddr,) = makeAddrAndKey(addrAndKeySeed);
         bool initialKeyIsRequestKey = true;
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKeyAddr, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_TRANSFER), initialKeyAddr); // Assert that initial key is the request key
         vm.stopPrank();
@@ -494,7 +489,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -527,7 +522,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -555,7 +550,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1); // Assert that `issuer1` is the admin
         vm.stopPrank();
@@ -581,7 +576,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1); // Assert that `issuer1` is the admin
         vm.stopPrank();
@@ -609,7 +604,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -638,7 +633,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -682,7 +677,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -721,7 +716,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -747,7 +742,7 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
@@ -772,17 +767,16 @@ contract ArianeeSmartAssetTest is Test {
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
 
         arianeeSmartAssetProxy.hydrateToken(
-            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
         vm.stopPrank();
 
         vm.startPrank(issuer1);
-        vm.expectEmit();
-        emit TokenDestroyed(tokenId);
-        arianeeSmartAssetProxy.destroy(tokenId);
+        // vm.expectEmit();
+        // emit TokenDestroyed(tokenId);
 
-        vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, tokenId));
-        arianeeSmartAssetProxy.issuerOf(tokenId);
+        vm.expectRevert("ArianeeSmartAsset: Destroy disabled");
+        arianeeSmartAssetProxy.destroy(tokenId);
         vm.stopPrank();
     }
 
@@ -809,7 +803,8 @@ contract ArianeeSmartAssetTest is Test {
             initialKey,
             tokenRecoveryTimestamp,
             initialKeyIsRequestKey,
-            issuer1
+            issuer1,
+            false
         );
         vm.stopPrank();
 
@@ -837,49 +832,28 @@ contract ArianeeSmartAssetTest is Test {
         vm.stopPrank();
     }
 
-    // Set ArianeeStore address
+    // Transfer access reset
 
-    function test_setStoreAddress(
-        address newStoreAddr
+    function test_resetTransferAccessOnUpdate(
+        uint256 tokenId,
+        bytes32 imprint,
+        string calldata uri,
+        address initialKey,
+        uint256 tokenRecoveryTimestamp,
+        bool initialKeyIsRequestKey
     ) public {
-        vm.startPrank(admin);
-        vm.expectEmit();
-        emit SetAddress("storeAddress", newStoreAddr);
-        arianeeSmartAssetProxy.setStoreAddress(newStoreAddr);
-        vm.stopPrank();
-    }
-
-    function test_setStoreAddress_err_onlyAdmin(
-        address newStoreAddr
-    ) public {
-        vm.startPrank(unknown);
-        vm.expectRevert(
-            abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
+        vm.startPrank(store);
+        arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
+        arianeeSmartAssetProxy.hydrateToken(
+            tokenId, imprint, uri, initialKey, tokenRecoveryTimestamp, initialKeyIsRequestKey, issuer1, false
         );
-        arianeeSmartAssetProxy.setStoreAddress(newStoreAddr);
         vm.stopPrank();
-    }
 
-    // Set ArianeeWhitelist address
-
-    function test_setWhitelistAddress(
-        address newWhitelistAddr
-    ) public {
-        vm.startPrank(admin);
-        vm.expectEmit();
-        emit SetAddress("whitelistAddress", newWhitelistAddr);
-        arianeeSmartAssetProxy.setWhitelistAddress(newWhitelistAddr);
-        vm.stopPrank();
-    }
-
-    function test_setWhitelistAddress_err_onlyAdmin(
-        address newWhitelistAddr
-    ) public {
-        vm.startPrank(unknown);
-        vm.expectRevert(
-            abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
-        );
-        arianeeSmartAssetProxy.setWhitelistAddress(newWhitelistAddr);
+        vm.startPrank(issuer1);
+        arianeeSmartAssetProxy.transferFrom(issuer1, user1, tokenId);
+        assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), user1);
+        assertEq(arianeeSmartAssetProxy.tokenHashedAccess(tokenId, ACCESS_TYPE_TRANSFER), address(0));
+        assertFalse(arianeeSmartAssetProxy.isRequestable(tokenId));
         vm.stopPrank();
     }
 }
