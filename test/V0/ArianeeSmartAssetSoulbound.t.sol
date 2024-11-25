@@ -151,6 +151,8 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         uint256 tokenRecoveryTimestamp,
         address newOwner
     ) public {
+        vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);

@@ -11,11 +11,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install requirement
+          name: Install Node and NPM
           command: |
             apk add --update nodejs npm bash
       - run:
-          name: Forge install
+          name: Install Forge dependencies
           command: forge install
       - run:
           name: Run tests
