@@ -157,6 +157,7 @@ contract ArianeeSmartAssetTest is Test {
         bool initialKeyIsRequestKey
     ) public {
         vm.assume(to != address(0)); // Make sure `to` is not the zero address
+        vm.assume(to != proxyAdmin); // Make sure `to` is not the proxy admin
         vm.assume(to != issuer1); // Make sure `to` is different from `issuer1`
 
         vm.startPrank(store);
@@ -234,6 +235,8 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
+        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
 
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
@@ -268,6 +271,8 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
+        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
 
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
@@ -360,6 +365,8 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
+        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
 
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
@@ -481,6 +488,7 @@ contract ArianeeSmartAssetTest is Test {
         address newOwner
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
         vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
         vm.assume(tokenRecoveryTimestamp > block.timestamp); // Make sure token is recoverable (recovery timestamp is in the future)
 
@@ -514,6 +522,7 @@ contract ArianeeSmartAssetTest is Test {
         address newOwner
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
         vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 
@@ -625,6 +634,7 @@ contract ArianeeSmartAssetTest is Test {
         address newOwner
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
         vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 
@@ -669,6 +679,7 @@ contract ArianeeSmartAssetTest is Test {
         address newOwner
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
         vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 

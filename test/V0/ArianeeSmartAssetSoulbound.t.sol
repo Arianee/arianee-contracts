@@ -91,6 +91,8 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         uint256 tokenRecoveryTimestamp
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
+        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
 
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
@@ -152,6 +154,8 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         address newOwner
     ) public {
         vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
+        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
+        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
 
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
