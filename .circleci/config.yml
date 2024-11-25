@@ -15,8 +15,8 @@ jobs:
           command: |
             apk add --update nodejs npm bash
       - run:
-          name: Clean artifacts and cache directories
-          command: forge clean
+          name: Forge install
+          command: forge install
       - run:
           name: Run tests
           command: forge test --fail-fast --fuzz-runs 1000
