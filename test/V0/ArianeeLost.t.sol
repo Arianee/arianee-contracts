@@ -16,13 +16,18 @@ import {
 } from "@arianee/V0/ArianeeLost.sol";
 import { IArianeeSmartAsset } from "@arianee/V0/Interfaces/IArianeeSmartAsset.sol";
 
+// - Check one last time comments
+
 contract ArianeeLostTest is Test {
     address proxyAdmin = vm.addr(1);
-    address admin = address(this);
+    address admin = address(this); // Admin is likely the "Arianee Foundation"
+
     address forwarder = vm.addr(2);
     address smartAsset = vm.addr(3);
+
     address unknown = vm.addr(4);
     address manager = vm.addr(5);
+    address user1 = vm.addr(6);
 
     ArianeeLost arianeeLostProxy;
     address arianeeLostImplAddr;
@@ -32,7 +37,7 @@ contract ArianeeLostTest is Test {
         opts.constructorData = abi.encode(forwarder);
 
         address arianeeLostProxyAddr = Upgrades.deployTransparentProxy(
-            "ArianeeLost.sol", proxyAdmin, abi.encodeCall(ArianeeLost.initialize, (smartAsset, manager)), opts
+            "ArianeeLost.sol", proxyAdmin, abi.encodeCall(ArianeeLost.initialize, (admin, smartAsset, manager)), opts
         );
 
         arianeeLostProxy = ArianeeLost(arianeeLostProxyAddr);
@@ -47,228 +52,239 @@ contract ArianeeLostTest is Test {
         console.log("Forwarder: %s", forwarder);
         console.log("SmartAsset: %s", smartAsset);
         console.log("Unknown: %s", unknown);
+        console.log("Manager: %s", manager);
+        console.log("User1: %s", user1);
     }
 
+    // Initializer
+
     function test_initialize() public view {
+        assertEq(arianeeLostProxy.owner(), admin, "Owner not initialized");
         assertEq(arianeeLostProxy.getManagerIdentity(), manager, "Manager identity not initialized");
     }
 
-    function test_set_missing_status() public {
-        uint256 tokenId = 1;
+    // Set missing status
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+    function test_set_missing_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
         vm.expectEmit();
         emit Missing(tokenId);
         arianeeLostProxy.setMissingStatus(tokenId);
 
-        // bool isMissing = arianeeLostProxy.tokenMissingStatus(tokenId); // TODO why is this not working ?
         bool isMissing = arianeeLostProxy.isMissing(tokenId);
-        assertTrue(isMissing, "Token missing status not set.");
+        assertTrue(isMissing, "Token missing status not set");
 
         vm.clearMockedCalls();
-
         vm.stopPrank();
     }
 
-    function test_set_notAdmin_missing_status() public {
-        uint256 tokenId = 1;
+    function test_set_notAdmin_missing_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(unknown);
 
-        vm.prank(unknown);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
-        vm.expectRevert("Not authorized because not the owner");
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
+        vm.expectRevert("ArianeeLost: Not authorized because not the SmartAsset owner");
         arianeeLostProxy.setMissingStatus(tokenId);
 
         vm.clearMockedCalls();
-
         vm.stopPrank();
     }
 
-    function test_err_missing_twice_status() public {
-        uint256 tokenId = 1;
-
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+    function test_err_missing_twice_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
         arianeeLostProxy.setMissingStatus(tokenId);
 
-        vm.expectRevert("The token must not be marked as missing.");
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+        vm.expectRevert("ArianeeLost: The SmartAsset must not be marked as missing");
         arianeeLostProxy.setMissingStatus(tokenId);
 
         vm.clearMockedCalls();
-
         vm.stopPrank();
     }
 
-    function test_unset_missing_status() public {
-        uint256 tokenId = 1;
+    // Unset missing status
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+    function test_unset_missing_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
         arianeeLostProxy.setMissingStatus(tokenId);
 
         vm.expectEmit();
         emit UnMissing(tokenId);
-
         arianeeLostProxy.unsetMissingStatus(tokenId);
 
         bool isMissing = arianeeLostProxy.isMissing(tokenId);
-        assertFalse(isMissing, "Token missing status not set.");
+        assertFalse(isMissing, "Token missing status not set");
 
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    function test_err_unset_missing_status() public {
-        uint256 tokenId = 1;
+    function test_err_unset_missing_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
-
-        vm.expectRevert("The token must be marked as missing.");
+        vm.expectRevert("ArianeeLost: The SmartAsset must be marked as missing");
         arianeeLostProxy.unsetMissingStatus(tokenId);
 
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    function test_set_stolen_status() public {
-        uint256 tokenId = 1;
-        address authorizedIdentity = vm.addr(5);
+    // Set stolen status
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+    function test_set_stolen_status(uint256 tokenId, address authorizedIdentity) public {
+        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
+        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
+        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
+        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
 
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
         arianeeLostProxy.setMissingStatus(tokenId);
         vm.stopPrank();
 
-        vm.prank(manager);
+        vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
+        vm.stopPrank();
 
+        vm.startPrank(authorizedIdentity);
         vm.expectEmit();
         emit Stolen(tokenId);
-        vm.stopPrank();
-
-        vm.prank(authorizedIdentity);
         arianeeLostProxy.setStolenStatus(tokenId);
 
         bool isStolen = arianeeLostProxy.isStolen(tokenId);
-        assertTrue(isStolen, "Token stolen status not set.");
+        assertTrue(isStolen, "Token stolen status not set");
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    function test_err_notMissing_set_stolen_status() public {
-        uint256 tokenId = 1;
-        address authorizedIdentity = vm.addr(5);
+    function test_err_notMissing_set_stolen_status(uint256 tokenId, address authorizedIdentity) public {
+        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
+        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
+        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
+        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
 
-        vm.prank(manager);
+        vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
 
-        vm.prank(authorizedIdentity);
+        vm.startPrank(authorizedIdentity);
         vm.expectRevert();
         arianeeLostProxy.setStolenStatus(tokenId);
-
         vm.stopPrank();
     }
 
-    function test_err_unauthorized_set_stolen_status() public {
-        uint256 tokenId = 1;
-
-        vm.prank(admin);
-
-        vm.expectRevert("Caller must be an authorized identity.");
-
+    function test_err_unauthorized_set_stolen_status(
+        uint256 tokenId
+    ) public {
+        vm.startPrank(unknown);
+        vm.expectRevert("ArianeeLost: Caller must be an authorized identity");
         arianeeLostProxy.setStolenStatus(tokenId);
     }
 
-    function test_unsetStolen_status() public {
-        uint256 tokenId = 1;
-        address authorizedIdentity = vm.addr(5);
+    // Unset stolen status
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+    function test_unsetStolen_status(uint256 tokenId, address authorizedIdentity) public {
+        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
+        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
+        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
+        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
+
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
         arianeeLostProxy.setMissingStatus(tokenId);
         vm.stopPrank();
 
-        vm.prank(manager);
+        vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
 
-        vm.prank(authorizedIdentity);
+        vm.startPrank(authorizedIdentity);
         arianeeLostProxy.setStolenStatus(tokenId);
-
-        vm.prank(authorizedIdentity);
         arianeeLostProxy.unsetStolenStatus(tokenId);
 
         bool isStolen = arianeeLostProxy.isStolen(tokenId);
-        assertFalse(isStolen, "Token stolen status not set to false after unstolen.");
+        assertFalse(isStolen, "Token stolen status not set to false after unstolen");
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    function test_err_notAuthorized_unsetStolen_status() public {
-        uint256 tokenId = 1;
-        address authorizedIdentity = vm.addr(5);
+    function test_err_notAuthorized_unsetStolen_status(uint256 tokenId, address authorizedIdentity) public {
+        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
+        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
+        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
+        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
 
-        vm.prank(admin);
-        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(admin));
+        vm.startPrank(user1);
+        vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
         arianeeLostProxy.setMissingStatus(tokenId);
         vm.stopPrank();
 
-        vm.prank(manager);
+        vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
 
-        vm.prank(authorizedIdentity);
+        vm.startPrank(authorizedIdentity);
         arianeeLostProxy.setStolenStatus(tokenId);
+        vm.stopPrank();
 
-        vm.prank(unknown);
-        vm.expectRevert("Caller must be an authorized identity or the manager.");
+        vm.startPrank(unknown);
+        vm.expectRevert("ArianeeLost: Caller must be an authorized identity or the Manager");
         arianeeLostProxy.unsetStolenStatus(tokenId);
 
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    function test_set_manager_identity() public {
-        address newManager = vm.addr(6);
+    // Set Manager identity
 
-        vm.prank(admin);
+    function test_set_manager_identity(
+        address newManager
+    ) public {
+        vm.startPrank(admin);
         arianeeLostProxy.setManagerIdentity(newManager);
-
-        assertEq(arianeeLostProxy.getManagerIdentity(), newManager, "Manager identity not set.");
+        assertEq(arianeeLostProxy.getManagerIdentity(), newManager, "Manager identity not set");
         vm.stopPrank();
     }
 
-    function test_err_notOwner_set_manager_identity() public {
-        address newManager = vm.addr(6);
-
-        vm.prank(unknown);
-
+    function test_err_notOwner_set_manager_identity(
+        address newManager
+    ) public {
+        vm.startPrank(unknown);
         vm.expectRevert();
         arianeeLostProxy.setManagerIdentity(newManager);
-
         vm.stopPrank();
     }
 
-    function test_unsetAuthorizedIdentity() public {
-        address authorizedIdentity = vm.addr(5);
+    // Unset authorized identity
 
-        vm.prank(manager);
+    function test_unsetAuthorizedIdentity(
+        address authorizedIdentity
+    ) public {
+        vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
 
-        vm.prank(manager);
+        vm.startPrank(manager);
         vm.expectEmit();
         emit AuthorizedIdentityRemoved(authorizedIdentity);
         arianeeLostProxy.unsetAuthorizedIdentity(authorizedIdentity);
 
         bool isAuthorized = arianeeLostProxy.isAddressAuthorized(authorizedIdentity);
-        assertFalse(isAuthorized, "Authorized identity not unset.");
+        assertFalse(isAuthorized, "Authorized identity not unset");
         vm.stopPrank();
     }
 }
