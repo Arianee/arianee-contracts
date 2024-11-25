@@ -11,12 +11,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Node and NPM
+          command: |
+            apk add --update nodejs npm bash
+      - run:
+          name: Install Forge dependencies
+          command: forge install
+      - run:
           name: Run tests
           command: forge test --fail-fast --fuzz-runs 1000
       - run:
           name: Run lints
           command: forge fmt --check --raw
-
 
 workflows:
   test:

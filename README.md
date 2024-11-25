@@ -33,28 +33,37 @@ You can access the reports by following the links below:
 ## Repository Usage
 
 ### Build
+
 To build the project, run the following command:
+
 ```shell
 $ forge build
 ```
 
 ### Test
+
 To run the tests, use the following command:
+
 ```shell
 $ forge test
 ```
 
 ### Format
+
 To format the code, run the following command:
+
 ```shell
 $ forge fmt
 ```
 
 ### Anvil
+
 To run an anvil node (local testnet shipped with Foundry), use the following command:
+
 ```shell
 $ anvil
 ```
+
 More information on Anvil can be found [here](https://book.getfoundry.sh/anvil/#overview-of-anvil).
 
 ### Deploy
@@ -62,6 +71,7 @@ More information on Anvil can be found [here](https://book.getfoundry.sh/anvil/#
 ```shell
 $ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
+
 More information about Solidity Scripting can be found [here](https://book.getfoundry.sh/tutorials/solidity-scripting#solidity-scripting).
 
 ### Cast
@@ -69,6 +79,13 @@ More information about Solidity Scripting can be found [here](https://book.getfo
 ```shell
 $ cast <subcommand>
 ```
+
+#### Cast (Index ERC-7201)
+
+```shell
+$ cast index-erc7201 [id]
+```
+
 More information about Cast can be found [here](https://book.getfoundry.sh/cast/#overview-of-cast).
 
 ### Help
