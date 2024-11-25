@@ -15,12 +15,14 @@ jobs:
           command: |
             apk add --update nodejs npm bash
       - run:
+          name: Clean artifacts and cache directories
+          command: forge clean
+      - run:
           name: Run tests
-          command: forge test --fail-fast --fuzz-runs 1000 
+          command: forge test --fail-fast --fuzz-runs 1000
       - run:
           name: Run lints
           command: forge fmt --check --raw
-
 
 workflows:
   test:
