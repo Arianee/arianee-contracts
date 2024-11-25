@@ -72,7 +72,6 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
     modifier onlyTokenOwner(
         uint256 _tokenId
     ) {
-        console.log("MsgSender: %s", _msgSender());
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         require(
             $.smartAsset.ownerOf(_tokenId) == _msgSender(),
@@ -110,7 +109,7 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
      */
     modifier onlyManager() {
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
-        require(_msgSender() == $.managerIdentity, "ArianeeLost: Caller must be the Manager");
+        require(_msgSender() == $.managerIdentity, "ArianeeLost: Caller must be the manager");
         _;
     }
 
@@ -130,7 +129,7 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         require(
             $.authorizedIdentities[_msgSender()] || _msgSender() == $.managerIdentity,
-            "ArianeeLost: Caller must be an authorized identity or the Manager"
+            "ArianeeLost: Caller must be an authorized identity or the manager"
         );
         _;
     }

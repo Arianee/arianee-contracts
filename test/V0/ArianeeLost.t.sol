@@ -54,6 +54,24 @@ contract ArianeeLostTest is Test {
         console.log("User1: %s", user1);
     }
 
+    modifier assumeIsNotKnownAddress(
+        address addr
+    ) {
+        vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
+        vm.assume(addr != msg.sender); // Make sure `addr` is not the default address
+
+        vm.assume(addr != proxyAdmin); // Make sure `addr` is not the proxy admin address
+        vm.assume(addr != admin); // Make sure `addr` is not the admin address
+
+        vm.assume(addr != forwarder); // Make sure `addr` is not the forwarder address
+        vm.assume(addr != smartAsset); // Make sure `addr` is not the smartAsset address
+
+        vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
+        vm.assume(addr != manager); // Make sure `addr` is not the manager address
+        vm.assume(addr != user1); // Make sure `addr` is not the first user address
+        _;
+    }
+
     // Initializer
 
     function test_initialize() public view {
@@ -142,12 +160,10 @@ contract ArianeeLostTest is Test {
 
     // Set stolen status
 
-    function test_set_stolen_status(uint256 tokenId, address authorizedIdentity) public {
-        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
-        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
-        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
-        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
-
+    function test_set_stolen_status(
+        uint256 tokenId,
+        address authorizedIdentity
+    ) public assumeIsNotKnownAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
         arianeeLostProxy.setMissingStatus(tokenId);
@@ -168,12 +184,10 @@ contract ArianeeLostTest is Test {
         vm.stopPrank();
     }
 
-    function test_err_notMissing_set_stolen_status(uint256 tokenId, address authorizedIdentity) public {
-        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
-        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
-        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
-        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
-
+    function test_err_notMissing_set_stolen_status(
+        uint256 tokenId,
+        address authorizedIdentity
+    ) public assumeIsNotKnownAddress(authorizedIdentity) {
         vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
@@ -194,12 +208,10 @@ contract ArianeeLostTest is Test {
 
     // Unset stolen status
 
-    function test_unsetStolen_status(uint256 tokenId, address authorizedIdentity) public {
-        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
-        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
-        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
-        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
-
+    function test_unsetStolen_status(
+        uint256 tokenId,
+        address authorizedIdentity
+    ) public assumeIsNotKnownAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
@@ -220,12 +232,10 @@ contract ArianeeLostTest is Test {
         vm.stopPrank();
     }
 
-    function test_err_notAuthorized_unsetStolen_status(uint256 tokenId, address authorizedIdentity) public {
-        vm.assume(authorizedIdentity != address(0)); // Make sure `authorizedIdentity` is not the zero address
-        vm.assume(authorizedIdentity != proxyAdmin); // Make sure `authorizedIdentity` is not the proxy admin address
-        vm.assume(authorizedIdentity != unknown); // Make sure `authorizedIdentity` is not the unknown address
-        vm.assume(authorizedIdentity != manager); // Make sure `authorizedIdentity` is not the Manager address
-
+    function test_err_notAuthorized_unsetStolen_status(
+        uint256 tokenId,
+        address authorizedIdentity
+    ) public assumeIsNotKnownAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
@@ -241,14 +251,14 @@ contract ArianeeLostTest is Test {
         vm.stopPrank();
 
         vm.startPrank(unknown);
-        vm.expectRevert("ArianeeLost: Caller must be an authorized identity or the Manager");
+        vm.expectRevert("ArianeeLost: Caller must be an authorized identity or the manager");
         arianeeLostProxy.unsetStolenStatus(tokenId);
 
         vm.clearMockedCalls();
         vm.stopPrank();
     }
 
-    // Set Manager identity
+    // Set manager identity
 
     function test_set_manager_identity(
         address newManager
