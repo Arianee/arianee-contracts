@@ -16,8 +16,6 @@ import {
 } from "@arianee/V0/ArianeeLost.sol";
 import { IArianeeSmartAsset } from "@arianee/V0/Interfaces/IArianeeSmartAsset.sol";
 
-// - Check one last time comments
-
 contract ArianeeLostTest is Test {
     address proxyAdmin = vm.addr(1);
     address admin = address(this); // Admin is likely the "Arianee Foundation"
