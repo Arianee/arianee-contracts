@@ -80,6 +80,25 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         console.log("User1: %s", user1);
     }
 
+    modifier assumeIsNotKnownAddress(
+        address addr
+    ) {
+        vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
+        vm.assume(addr != msg.sender); // Make sure `addr` is not the default address
+
+        vm.assume(addr != proxyAdmin); // Make sure `addr` is not the proxy admin address
+        vm.assume(addr != admin); // Make sure `addr` is not the admin address
+
+        vm.assume(addr != forwarder); // Make sure `addr` is not the forwarder address
+        vm.assume(addr != store); // Make sure `addr` is not the store address
+        vm.assume(addr != whitelist); // Make sure `addr` is not the whitelist address
+
+        vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
+        vm.assume(addr != issuer1); // Make sure `addr` is not the first issuer address
+        vm.assume(addr != user1); // Make sure `addr` is not the first user address
+        _;
+    }
+
     // Request SmartAsset
 
     function test_requestToken_err_isSoulbound(
@@ -89,11 +108,7 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         string calldata addrAndKeySeed,
         string calldata uri,
         uint256 tokenRecoveryTimestamp
-    ) public {
-        vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
-        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
-        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
-
+    ) public assumeIsNotKnownAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
@@ -152,11 +167,7 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         string calldata uri,
         uint256 tokenRecoveryTimestamp,
         address newOwner
-    ) public {
-        vm.assume(newOwner != address(0)); // Make sure `newOwner` is not the zero address
-        vm.assume(newOwner != proxyAdmin); // Make sure `newOwner` is not the proxy admin
-        vm.assume(newOwner != issuer1); // Make sure `newOwner` is different from `issuer1`
-
+    ) public assumeIsNotKnownAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);

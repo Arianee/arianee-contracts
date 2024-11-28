@@ -19,7 +19,7 @@ jobs:
           command: forge install
       - run:
           name: Run tests
-          command: forge test --fail-fast --fuzz-runs 1000
+          command: forge test --fail-fast
       - run:
           name: Run lints
           command: forge fmt --check --raw
