@@ -216,7 +216,7 @@ contract ArianeeEvent is
         ArianeeEventStorageV0 storage $ = _getArianeeEventStorageV0();
         uint256 tokenId = $.eventIdToTokenId[_eventId];
 
-        require(_isPending(_eventId), "ArianeeEvent: Event is not pending");
+        require(isPending(_eventId), "ArianeeEvent: Event is not pending");
         uint256 pendingEventToRemoveIndex = $.eventIdToPendingEventListIndex[_eventId];
         uint256 lastPendingIndex = $.tokenIdToPendingEventList[tokenId].length - 1;
 
@@ -275,7 +275,7 @@ contract ArianeeEvent is
             block.timestamp < $.eventIdToEvent[_eventId].destroyLimitTimestamp,
             "ArianeeEvent: Destroy limit timestamp reached"
         );
-        require(!_isPending(_eventId), "ArianeeEvent: Event is still pending");
+        require(!isPending(_eventId), "ArianeeEvent: Event is still pending");
         _destroy(_eventId);
     }
 
@@ -287,7 +287,7 @@ contract ArianeeEvent is
      */
     function updateDestroyRequest(uint256 _eventId, bool _active) external isProviderOrIssuer(_eventId) whenNotPaused {
         ArianeeEventStorageV0 storage $ = _getArianeeEventStorageV0();
-        require(!_isPending(_eventId), "ArianeeEvent: Event is still pending");
+        require(!isPending(_eventId), "ArianeeEvent: Event is still pending");
 
         $.eventIdToDestroyRequest[_eventId] = _active;
         emit DestroyRequestUpdated(_eventId, _active);
@@ -379,22 +379,24 @@ contract ArianeeEvent is
         return _getArianeeEventStorageV0().eventIdToTokenId[_eventId];
     }
 
-    // Internal Functions & Overrides
-
-    function _isPending(
+    /**
+     * @notice Returns a flag indicating if an event is pending or not
+     * @param _eventId Event ID
+     */
+    function isPending(
         uint256 _eventId
-    ) internal view returns (bool) {
+    ) public view returns (bool) {
         ArianeeEventStorageV0 storage $ = _getArianeeEventStorageV0();
         uint256 tokenId = $.eventIdToTokenId[_eventId];
         if ($.tokenIdToPendingEventList[tokenId].length == 0) {
             return false;
-        } else if ($.tokenIdToPendingEventList[tokenId].length == 1) {
-            // If there is only one event in the pending list, `$.eventIdToPendingEventListIndex[_eventId]` is always 0
-            return $.tokenIdToPendingEventList[tokenId][0] == _eventId;
         } else {
-            return $.eventIdToPendingEventListIndex[_eventId] != 0;
+            uint256 eventListIndex = $.eventIdToPendingEventListIndex[_eventId];
+            return $.tokenIdToPendingEventList[tokenId][eventListIndex] == _eventId;
         }
     }
+
+    // Internal Functions & Overrides
 
     function _destroy(
         uint256 _eventId

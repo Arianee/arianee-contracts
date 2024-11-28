@@ -242,6 +242,44 @@ contract ArianeeEventTest is Test {
         vm.stopPrank();
     }
 
+    function test_acceptEvent_twice_err_notPending(
+        uint256 eventId,
+        uint256 eventId2,
+        uint256 tokenId,
+        bytes32 imprint,
+        string calldata uri,
+        uint256 rewards,
+        address provider,
+        address sender
+    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+        vm.assume(eventId != eventId2); // Make sure `eventId` and `eventId2` are different
+
+        vm.startPrank(store);
+        vm.mockCall(
+            smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.tokenCreation.selector), abi.encode(block.timestamp)
+        );
+        // Create an event first
+        arianeeEventProxy.create(eventId, tokenId, imprint, uri, rewards, provider);
+        // Create another event
+        arianeeEventProxy.create(eventId2, tokenId, imprint, uri, rewards, provider);
+
+        vm.mockCall(
+            smartAsset,
+            abi.encodeWithSelector(IArianeeSmartAsset.canOperate.selector, tokenId, sender),
+            abi.encode(true)
+        );
+        vm.mockCall(whitelist, abi.encodeWithSelector(IArianeeWhitelist.addWhitelistedAddress.selector), abi.encode());
+        // Accept the first event
+        arianeeEventProxy.accept(eventId, sender);
+
+        // Try to accept the same event again
+        vm.expectRevert("ArianeeEvent: Event is not pending");
+        arianeeEventProxy.accept(eventId, sender);
+
+        vm.clearMockedCalls();
+        vm.stopPrank();
+    }
+
     function test_acceptEvent_err_isOperator(
         uint256 eventId,
         uint256 tokenId,
@@ -775,6 +813,54 @@ contract ArianeeEventTest is Test {
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
         );
         arianeeEventProxy.setStoreAddress(newStoreAddr);
+        vm.stopPrank();
+    }
+
+    // Is pending
+
+    function test_isPending(
+        uint256 eventId,
+        uint256 eventId2,
+        uint256 tokenId,
+        bytes32 imprint,
+        string calldata uri,
+        uint256 rewards,
+        address provider,
+        address sender
+    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+        vm.startPrank(store);
+        // Create an event first
+        vm.mockCall(
+            smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.tokenCreation.selector), abi.encode(block.timestamp)
+        );
+        arianeeEventProxy.create(eventId, tokenId, imprint, uri, rewards, provider);
+        // Create another event
+        arianeeEventProxy.create(eventId2, tokenId, imprint, uri, rewards, provider);
+
+        assertEq(arianeeEventProxy.pendingEventsLength(tokenId), 2);
+        assertEq(arianeeEventProxy.eventsLength(tokenId), 0);
+
+        vm.mockCall(
+            smartAsset,
+            abi.encodeWithSelector(IArianeeSmartAsset.canOperate.selector, tokenId, sender),
+            abi.encode(true)
+        );
+        vm.mockCall(whitelist, abi.encodeWithSelector(IArianeeWhitelist.addWhitelistedAddress.selector), abi.encode());
+        // Accept the first event
+        arianeeEventProxy.accept(eventId, sender);
+        assertEq(arianeeEventProxy.pendingEventsLength(tokenId), 1);
+        assertEq(arianeeEventProxy.eventsLength(tokenId), 1);
+        assertFalse(arianeeEventProxy.isPending(eventId));
+        assertTrue(arianeeEventProxy.isPending(eventId2));
+
+        // Accept the second event
+        arianeeEventProxy.accept(eventId2, sender);
+        assertEq(arianeeEventProxy.pendingEventsLength(tokenId), 0);
+        assertEq(arianeeEventProxy.eventsLength(tokenId), 2);
+        assertFalse(arianeeEventProxy.isPending(eventId2));
+        assertFalse(arianeeEventProxy.isPending(eventId));
+
+        vm.clearMockedCalls();
         vm.stopPrank();
     }
 }
