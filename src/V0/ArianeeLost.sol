@@ -1,21 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { console } from "forge-std/Test.sol";
-
 // Stateless
 import { IArianeeLost } from "./Interfaces/IArianeeLost.sol";
 import { IArianeeSmartAsset } from "./Interfaces/IArianeeSmartAsset.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-import { ERC721_NAME, ERC721_SYMBOL } from "./Constants.sol";
+
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // Utils
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-// ERC721
-import { ERC721Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+// Access
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /**
@@ -25,8 +21,6 @@ import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/O
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
 contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, OwnableUpgradeable {
-    using Strings for uint256;
-
     /// @custom:storage-location erc7201:arianeelost.storage.v0
     struct ArianeeLostStorageV0 {
         /**

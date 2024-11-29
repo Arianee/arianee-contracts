@@ -7,7 +7,7 @@ interface IArianeeEvent {
         uint256 _tokenId,
         bytes32 _imprint,
         string memory _uri,
-        uint256 _reward,
+        uint256 _rewards,
         address _provider
     ) external;
 

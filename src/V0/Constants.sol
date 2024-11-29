@@ -16,3 +16,9 @@ uint256 constant ACCESS_TYPE_TRANSFER = 1;
 
 // ArianeeEvent
 uint256 constant EVENT_DESTROY_DELAY = 31_536_000; // 1 year in seconds
+
+// ArianeeStore
+uint256 constant CREDIT_TYPE_CERTIFICATE = 0;
+uint256 constant CREDIT_TYPE_MESSAGE = 1;
+uint256 constant CREDIT_TYPE_EVENT = 2;
+uint256 constant CREDIT_TYPE_UPDATE = 3;
