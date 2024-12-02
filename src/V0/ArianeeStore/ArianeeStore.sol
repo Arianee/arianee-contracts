@@ -236,7 +236,7 @@ contract ArianeeStore is
 
         uint256 _rewards = _spendCreditFunction(CREDIT_TYPE_CERTIFICATE, 1, _msgSender());
         _dispatchRewardsAtHydrate(_rewardsReceiver, _rewards);
-        $.rewardsHistory.setTokenRewards(_tokenId, _rewards);
+        $.rewardsHistory.setTokenReward(_tokenId, _rewards);
 
         $.smartAsset.hydrateToken(
             _tokenId,
@@ -414,20 +414,6 @@ contract ArianeeStore is
     }
 
     /**
-     * @notice Set the Aria/USD exchange rate
-     * @dev Can only be called by the authorized exchange address
-     * @param _ariaUSDExchange New exchange rate
-     */
-    function setAriaUSDExchange(
-        uint256 _ariaUSDExchange
-    ) external onlyAuthorizedExchangeAddress {
-        _getArianeeStoreStorageV0().ariaUSDExchange = _ariaUSDExchange;
-        _updateCreditPrice();
-
-        emit NewAriaUSDExchange(_ariaUSDExchange);
-    }
-
-    /**
      * @notice Set the different rewards dispatch percent per actor
      */
     function setDispatchPercent(
@@ -442,11 +428,11 @@ contract ArianeeStore is
             "ArianeeStore: Dispatch percent must sum to 100"
         );
         ArianeeStoreStorageV0 storage $ = _getArianeeStoreStorageV0();
-        $.dispatchPercent[0] = _percentInfra;
-        $.dispatchPercent[1] = _percentBrandsProvider;
-        $.dispatchPercent[2] = _percentOwnerProvider;
-        $.dispatchPercent[3] = _arianeeProject;
-        $.dispatchPercent[4] = _smartAssetHolder;
+        $.dispatchPercent[0] = _percentInfra; // Protocol infrastructure
+        $.dispatchPercent[1] = _percentBrandsProvider; // NMP provider
+        $.dispatchPercent[2] = _percentOwnerProvider; // Wallet provider
+        $.dispatchPercent[3] = _arianeeProject; // Protocol maintainer
+        $.dispatchPercent[4] = _smartAssetHolder; // SmartAsset holder
 
         emit NewDispatchPercent(
             _percentInfra, _percentBrandsProvider, _percentOwnerProvider, _arianeeProject, _smartAssetHolder
@@ -474,6 +460,22 @@ contract ArianeeStore is
                 require(token.transfer(withdrawAddress, tokenBalance), "Token transfer failed");
             }
         }
+    }
+
+    // Restricted functions
+
+    /**
+     * @notice Set the Aria/USD exchange rate
+     * @dev Can only be called by the authorized exchange address
+     * @param _ariaUSDExchange New exchange rate
+     */
+    function setAriaUSDExchange(
+        uint256 _ariaUSDExchange
+    ) external onlyAuthorizedExchangeAddress {
+        _getArianeeStoreStorageV0().ariaUSDExchange = _ariaUSDExchange;
+        _updateCreditPrice();
+
+        emit NewAriaUSDExchange(_ariaUSDExchange);
     }
 
     /**

@@ -77,13 +77,13 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
 
     // Token rewards
 
-    function setTokenRewards(uint256 _tokenId, uint256 _rewards) public onlyStore {
+    function setTokenReward(uint256 _tokenId, uint256 _rewards) public onlyStore {
         _getArianeeRewardsHistoryStorageV0().tokenToRewards[_tokenId] = _rewards;
     }
 
     function getTokenReward(
         uint256 _tokenId
-    ) public view onlyStore returns (uint256) {
+    ) public view returns (uint256) {
         return _getArianeeRewardsHistoryStorageV0().tokenToRewards[_tokenId];
     }
 
@@ -101,7 +101,7 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
 
     function getTokenNmpProvider(
         uint256 _tokenId
-    ) public view onlyStore returns (address) {
+    ) public view returns (address) {
         return _getArianeeRewardsHistoryStorageV0().tokenToNmpProvider[_tokenId];
     }
 
@@ -113,7 +113,7 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
 
     function getTokenWalletProvider(
         uint256 _tokenId
-    ) public view onlyStore returns (address) {
+    ) public view returns (address) {
         return _getArianeeRewardsHistoryStorageV0().tokenToWalletProvider[_tokenId];
     }
 }

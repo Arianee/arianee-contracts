@@ -101,7 +101,7 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
      */
     function consumeCredits(address _spender, uint256 _type, uint256 _quantity) external onlyStore returns (uint256) {
         ArianeeCreditHistoryStorageV0 storage $ = _getArianeeCreditHistoryStorageV0();
-        require($.addrToTypeToTotalCredit[_spender][_type] > 0, "ArianeeCreditHistory: Unknow credit type");
+        require($.addrToTypeToTotalCredit[_spender][_type] > 0, "ArianeeCreditHistory: Unknown credit type");
 
         uint256 _index = $.addrToTypeToCreditHistoryIndex[_spender][_type];
         require(

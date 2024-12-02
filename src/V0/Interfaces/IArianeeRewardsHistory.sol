@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 interface IArianeeRewardsHistory {
-    function setTokenRewards(uint256 _tokenId, uint256 _rewards) external;
+    function setTokenReward(uint256 _tokenId, uint256 _rewards) external;
 
     function getTokenReward(
         uint256 _tokenId
