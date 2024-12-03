@@ -83,7 +83,9 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_failUnauthorized_addAddressToApprovedList(address _newIdentity) public assumeIsNotKnownAddress(_newIdentity) {
+    function test_failUnauthorized_addAddressToApprovedList(
+        address _newIdentity
+    ) public assumeIsNotKnownAddress(_newIdentity) {
         vm.startPrank(admin);
 
         vm.expectRevert();
@@ -92,7 +94,9 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_removeAddressFromApprovedList(address _identity) public assumeIsNotKnownAddress(_identity) {
+    function test_removeAddressFromApprovedList(
+        address _identity
+    ) public assumeIsNotKnownAddress(_identity) {
         vm.startPrank(bouncer);
 
         arianeeIdentityProxy.addAddressToApprovedList(_identity);
@@ -105,7 +109,9 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_unauthorized_removeAddressFromApprovedList(address _identity) public assumeIsNotKnownAddress(_identity) {
+    function test_unauthorized_removeAddressFromApprovedList(
+        address _identity
+    ) public assumeIsNotKnownAddress(_identity) {
         vm.startPrank(admin);
 
         vm.expectRevert();
@@ -114,7 +120,11 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_updateInformations(string calldata _uri, bytes32 _imprint, address _newIdentity) public assumeIsNotKnownAddress(_newIdentity) {
+    function test_updateInformations(
+        string calldata _uri,
+        bytes32 _imprint,
+        address _newIdentity
+    ) public assumeIsNotKnownAddress(_newIdentity) {
         vm.startPrank(bouncer);
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
         vm.stopPrank();
@@ -142,7 +152,11 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_validateInformations(string calldata _uriToValidate, bytes32 _imprintToValidate, address _newIdentity) public assumeIsNotKnownAddress(_newIdentity) {
+    function test_validateInformations(
+        string calldata _uriToValidate,
+        bytes32 _imprintToValidate,
+        address _newIdentity
+    ) public assumeIsNotKnownAddress(_newIdentity) {
         vm.startPrank(bouncer);
 
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
