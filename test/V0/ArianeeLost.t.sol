@@ -170,6 +170,8 @@ contract ArianeeLostTest is Test {
         vm.stopPrank();
 
         vm.startPrank(manager);
+        vm.expectEmit();
+        emit AuthorizedIdentityAdded(authorizedIdentity);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
 

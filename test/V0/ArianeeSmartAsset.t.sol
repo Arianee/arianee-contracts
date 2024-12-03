@@ -6,7 +6,6 @@ import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IERC721Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import {
