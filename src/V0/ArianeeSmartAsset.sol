@@ -64,7 +64,7 @@ contract ArianeeSmartAsset is
          */
         IArianeeStore store;
         /**
-         * @notice The ArianeeStore contract
+         * @notice The ArianeeWhitelist contract
          */
         IArianeeWhitelist whitelist;
         /**

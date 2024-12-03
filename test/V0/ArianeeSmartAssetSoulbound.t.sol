@@ -4,36 +4,15 @@ pragma solidity 0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IERC721Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {
-    ArianeeSmartAsset,
-    Hydrated,
-    TokenRecovered,
-    RecoveryRequestUpdated,
-    TokenURIUpdated,
-    TokenDestroyed,
-    SetNewUriBase
-} from "@arianee/V0/ArianeeSmartAsset.sol";
+import { ArianeeSmartAsset } from "@arianee/V0/ArianeeSmartAsset.sol";
 import { IArianeeStore } from "@arianee/V0/Interfaces/IArianeeStore.sol";
 import { IArianeeWhitelist } from "@arianee/V0/Interfaces/IArianeeWhitelist.sol";
-import {
-    ROLE_ADMIN,
-    ROLE_ARIANEE_STORE,
-    ERC721_NAME,
-    ERC721_SYMBOL,
-    URI_BASE,
-    ACCESS_TYPE_VIEW,
-    ACCESS_TYPE_TRANSFER
-} from "@arianee/V0/Constants.sol";
+import { ROLE_ARIANEE_STORE, ACCESS_TYPE_TRANSFER } from "@arianee/V0/Constants.sol";
 import { ArianeeUtils } from "../Utils.sol";
 
 contract ArianeeSmartAsseSoulboundTest is Test {
-    using Strings for uint256;
-
     address proxyAdmin = vm.addr(1);
     address admin = address(this); // Admin is likely the "Arianee Foundation"
 

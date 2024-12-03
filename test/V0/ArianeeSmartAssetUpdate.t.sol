@@ -9,7 +9,7 @@ import {
     ArianeeSmartAssetUpdate, SmartAssetUpdated, SmartAssetUpdateReaded
 } from "@arianee/V0/ArianeeSmartAssetUpdate.sol";
 import { IArianeeSmartAsset } from "@arianee/V0/Interfaces/IArianeeSmartAsset.sol";
-import { ROLE_ADMIN, ROLE_ARIANEE_STORE } from "@arianee/V0/Constants.sol";
+import { ROLE_ARIANEE_STORE } from "@arianee/V0/Constants.sol";
 
 contract ArianeeSmartAssetUpdateTest is Test {
     address proxyAdmin = vm.addr(1);

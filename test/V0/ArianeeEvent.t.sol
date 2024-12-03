@@ -828,6 +828,8 @@ contract ArianeeEventTest is Test {
         address provider,
         address sender
     ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+        vm.assume(eventId != eventId2); // Make sure `eventId` and `eventId2` are different
+
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
