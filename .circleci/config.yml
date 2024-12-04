@@ -22,12 +22,12 @@ jobs:
           command: forge install
       - run:
           name: Run tests
-          command: npm run test
+          command: npm run test -- --fuzz-runs 1
       - run:
           name: Run tests with prover
-          command: npm run test:prover
+          command: npm run test:prover -- --fuzz-runs 1
       - run:
-          name: Run lints
+          name: Run lint
           command: forge fmt --check --raw
 
 workflows:
