@@ -21,6 +21,9 @@ jobs:
           name: Install Forge dependencies
           command: forge install
       - run:
+          name: Install node dependencies
+          command: npm ci
+      - run:
           name: Run tests
           command: npm run test -- --fuzz-runs 1
       - run:
