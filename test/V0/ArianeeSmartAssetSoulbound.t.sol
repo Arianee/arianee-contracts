@@ -57,9 +57,12 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         console.log("Unknown: %s", unknown);
         console.log("Issuer1: %s", issuer1);
         console.log("User1: %s", user1);
+        // Contracts
+        console.log("ArianeeSmartAssetProxy: %s", address(arianeeSmartAssetProxy));
+        console.log("ArianeeSmartAssetImpl: %s", arianeeSmartAssetImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -75,6 +78,9 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
         vm.assume(addr != issuer1); // Make sure `addr` is not the first issuer address
         vm.assume(addr != user1); // Make sure `addr` is not the first user address
+
+        vm.assume(addr != address(arianeeSmartAssetProxy)); // Make sure `addr` is not the ArianeeSmartAsset proxy address
+        vm.assume(addr != arianeeSmartAssetImplAddr); // Make sure `addr` is not the ArianeeSmartAsset implementation address
         _;
     }
 
@@ -87,7 +93,7 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         string calldata addrAndKeySeed,
         string calldata uri,
         uint256 tokenRecoveryTimestamp
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
@@ -146,7 +152,7 @@ contract ArianeeSmartAsseSoulboundTest is Test {
         string calldata uri,
         uint256 tokenRecoveryTimestamp,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);

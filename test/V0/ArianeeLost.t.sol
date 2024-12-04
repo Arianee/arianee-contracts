@@ -52,9 +52,12 @@ contract ArianeeLostTest is Test {
         console.log("Unknown: %s", unknown);
         console.log("Manager: %s", manager);
         console.log("User1: %s", user1);
+        // Contracts
+        console.log("ArianeeLostProxy: %s", address(arianeeLostProxy));
+        console.log("ArianeeLostImpl: %s", arianeeLostImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -69,6 +72,9 @@ contract ArianeeLostTest is Test {
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
         vm.assume(addr != manager); // Make sure `addr` is not the manager address
         vm.assume(addr != user1); // Make sure `addr` is not the first user address
+
+        vm.assume(addr != address(arianeeLostProxy)); // Make sure `addr` is not the ArianeeLost proxy address
+        vm.assume(addr != arianeeLostImplAddr); // Make sure `addr` is not the ArianeeLost implementation address
         _;
     }
 
@@ -163,7 +169,7 @@ contract ArianeeLostTest is Test {
     function test_set_stolen_status(
         uint256 tokenId,
         address authorizedIdentity
-    ) public assumeIsNotKnownAddress(authorizedIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
         arianeeLostProxy.setMissingStatus(tokenId);
@@ -189,7 +195,7 @@ contract ArianeeLostTest is Test {
     function test_err_notMissing_set_stolen_status(
         uint256 tokenId,
         address authorizedIdentity
-    ) public assumeIsNotKnownAddress(authorizedIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(authorizedIdentity) {
         vm.startPrank(manager);
         arianeeLostProxy.setAuthorizedIdentity(authorizedIdentity);
         vm.stopPrank();
@@ -213,7 +219,7 @@ contract ArianeeLostTest is Test {
     function test_unsetStolen_status(
         uint256 tokenId,
         address authorizedIdentity
-    ) public assumeIsNotKnownAddress(authorizedIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 
@@ -237,7 +243,7 @@ contract ArianeeLostTest is Test {
     function test_err_notAuthorized_unsetStolen_status(
         uint256 tokenId,
         address authorizedIdentity
-    ) public assumeIsNotKnownAddress(authorizedIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(authorizedIdentity) {
         vm.startPrank(user1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.ownerOf.selector), abi.encode(user1));
 

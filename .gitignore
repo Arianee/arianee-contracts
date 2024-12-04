@@ -18,3 +18,6 @@ docs/
 
 .idea/
 .history
+
+# Node.js
+node_modules/

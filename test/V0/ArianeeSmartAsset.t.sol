@@ -77,9 +77,12 @@ contract ArianeeSmartAssetTest is Test {
         console.log("Unknown: %s", unknown);
         console.log("Issuer1: %s", issuer1);
         console.log("User1: %s", user1);
+        // Contracts
+        console.log("ArianeeSmartAssetProxy: %s", address(arianeeSmartAssetProxy));
+        console.log("ArianeeSmartAssetImpl: %s", arianeeSmartAssetImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -95,6 +98,9 @@ contract ArianeeSmartAssetTest is Test {
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
         vm.assume(addr != issuer1); // Make sure `addr` is not the first issuer address
         vm.assume(addr != user1); // Make sure `addr` is not the first user address
+
+        vm.assume(addr != address(arianeeSmartAssetProxy)); // Make sure `addr` is not the ArianeeSmartAsset proxy address
+        vm.assume(addr != arianeeSmartAssetImplAddr); // Make sure `addr` is not the ArianeeSmartAsset implementation address
         _;
     }
 
@@ -109,14 +115,14 @@ contract ArianeeSmartAssetTest is Test {
 
     // Reserve SmartAsset
 
-    function test_reserveToken(uint256 tokenId, address to) public assumeIsNotKnownAddress(to) {
+    function test_reserveToken(uint256 tokenId, address to) public assumeIsNotKnownOrZeroAddress(to) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, to);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), to);
         vm.stopPrank();
     }
 
-    function test_reserveToken_err_onlyStore(uint256 tokenId, address to) public assumeIsNotKnownAddress(to) {
+    function test_reserveToken_err_onlyStore(uint256 tokenId, address to) public assumeIsNotKnownOrZeroAddress(to) {
         vm.startPrank(unknown);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -169,7 +175,7 @@ contract ArianeeSmartAssetTest is Test {
         address initialKey,
         uint256 tokenRecoveryTimestamp,
         bool initialKeyIsRequestKey
-    ) public assumeIsNotKnownAddress(to) {
+    ) public assumeIsNotKnownOrZeroAddress(to) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, to); // Reserve token to `to` instead of `issuer1`
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), to);
@@ -243,7 +249,7 @@ contract ArianeeSmartAssetTest is Test {
         string calldata addrAndKeySeed,
         string calldata uri,
         uint256 tokenRecoveryTimestamp
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
@@ -275,7 +281,7 @@ contract ArianeeSmartAssetTest is Test {
         string calldata addrAndKeySeed,
         string calldata uri,
         uint256 tokenRecoveryTimestamp
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
@@ -365,7 +371,7 @@ contract ArianeeSmartAssetTest is Test {
         string calldata addrAndKeySeed,
         string calldata uri,
         uint256 tokenRecoveryTimestamp
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(store);
         arianeeSmartAssetProxy.reserveToken(tokenId, issuer1);
         assertEq(arianeeSmartAssetProxy.ownerOf(tokenId), issuer1);
@@ -484,7 +490,7 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp,
         bool initialKeyIsRequestKey,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.assume(tokenRecoveryTimestamp > block.timestamp); // Make sure token is recoverable (recovery timestamp is in the future)
 
         vm.startPrank(store);
@@ -515,7 +521,7 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp,
         bool initialKeyIsRequestKey,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 
         vm.startPrank(store);
@@ -624,7 +630,7 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp,
         bool initialKeyIsRequestKey,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 
         vm.startPrank(store);
@@ -666,7 +672,7 @@ contract ArianeeSmartAssetTest is Test {
         uint256 tokenRecoveryTimestamp,
         bool initialKeyIsRequestKey,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.assume(tokenRecoveryTimestamp <= block.timestamp); // Make sure token is not recoverable (recovery timestamp is in the past or current block)
 
         vm.startPrank(store);
