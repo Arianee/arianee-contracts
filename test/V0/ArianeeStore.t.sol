@@ -165,11 +165,14 @@ contract ArianeeStoreTest is Test {
         // Contracts
         console.log("Aria: %s", address(aria));
         console.log("ArianeeStoreProxy: %s", address(arianeeStoreProxy));
+        console.log("ArianeeStoreImpl: %s", arianeeStoreImplAddr);
         console.log("ArianeeCreditHistoryProxy: %s", address(arianeeCreditHistoryProxy));
+        console.log("ArianeeCreditHistoryImpl: %s", arianeeCreditHistoryImplAddr);
         console.log("ArianeeRewardsHistoryProxy: %s", address(arianeeRewardsHistoryProxy));
+        console.log("ArianeeRewardsHistoryImpl: %s", arianeeRewardsHistoryImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -191,8 +194,11 @@ contract ArianeeStoreTest is Test {
 
         vm.assume(addr != address(aria)); // Make sure `addr` is not the Aria token address
         vm.assume(addr != address(arianeeStoreProxy)); // Make sure `addr` is not the ArianeeStore proxy address
+        vm.assume(addr != arianeeStoreImplAddr); // Make sure `addr` is not the ArianeeStore implementation address
         vm.assume(addr != address(arianeeCreditHistoryProxy)); // Make sure `addr` is not the ArianeeCreditHistory proxy address
+        vm.assume(addr != arianeeCreditHistoryImplAddr); // Make sure `addr` is not the ArianeeCreditHistory implementation address
         vm.assume(addr != address(arianeeRewardsHistoryProxy)); // Make sure `addr` is not the ArianeeRewardsHistory proxy address
+        vm.assume(addr != arianeeRewardsHistoryImplAddr); // Make sure `addr` is not the ArianeeRewardsHistory implementation address
         _;
     }
 
@@ -300,7 +306,7 @@ contract ArianeeStoreTest is Test {
 
     function test_reserveToken(
         address to
-    ) public assumeIsNotKnownAddress(to) {
+    ) public assumeIsNotKnownOrZeroAddress(to) {
         vm.startPrank(issuer1);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.reserveToken.selector), abi.encode());
         uint256 tokenId = 1;
@@ -527,7 +533,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setAuthorizedExchangeAddress(
         address newAuthorizedExchangeAddress
-    ) public assumeIsNotKnownAddress(newAuthorizedExchangeAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newAuthorizedExchangeAddress) {
         vm.startPrank(admin);
         vm.expectEmit();
         emit SetAddress("authorizedExchange", newAuthorizedExchangeAddress);
@@ -537,7 +543,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setAuthorizedExchangeAddress_err_onlyAdmin(
         address newAuthorizedExchangeAddress
-    ) public assumeIsNotKnownAddress(newAuthorizedExchangeAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newAuthorizedExchangeAddress) {
         vm.startPrank(unknown);
         vm.expectRevert(
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
@@ -548,7 +554,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setProtocolInfraAddress(
         address newProtocolInfraAddress
-    ) public assumeIsNotKnownAddress(newProtocolInfraAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newProtocolInfraAddress) {
         vm.startPrank(admin);
         vm.expectEmit();
         emit SetAddress("protocolInfra", newProtocolInfraAddress);
@@ -558,7 +564,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setProtocolInfraAddress_err_onlyAdmin(
         address newProtocolInfraAddress
-    ) public assumeIsNotKnownAddress(newProtocolInfraAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newProtocolInfraAddress) {
         vm.startPrank(unknown);
         vm.expectRevert(
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
@@ -569,7 +575,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setArianeeProjectAddress(
         address newArianeeProjectAddress
-    ) public assumeIsNotKnownAddress(newArianeeProjectAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newArianeeProjectAddress) {
         vm.startPrank(admin);
         vm.expectEmit();
         emit SetAddress("arianeeProject", newArianeeProjectAddress);
@@ -579,7 +585,7 @@ contract ArianeeStoreTest is Test {
 
     function test_setArianeeProjectAddress_err_onlyAdmin(
         address newArianeeProjectAddress
-    ) public assumeIsNotKnownAddress(newArianeeProjectAddress) {
+    ) public assumeIsNotKnownOrZeroAddress(newArianeeProjectAddress) {
         vm.startPrank(unknown);
         vm.expectRevert(
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
@@ -655,7 +661,7 @@ contract ArianeeStoreTest is Test {
     function test_dispatchRewardsAtFirstTransfer(
         uint256 tokenId,
         address newOwner
-    ) public assumeIsNotKnownAddress(newOwner) {
+    ) public assumeIsNotKnownOrZeroAddress(newOwner) {
         vm.startPrank(address(arianeeStoreProxy));
         uint256 rewards = 100 ^ 18;
         aria.mint(address(arianeeStoreProxy), rewards);
