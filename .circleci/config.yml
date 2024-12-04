@@ -18,8 +18,14 @@ jobs:
           name: Install Forge dependencies
           command: forge install
       - run:
+          name: Install node dependencies
+          command: npm ci
+      - run:
           name: Run tests
-          command: forge test --fail-fast
+          command: npm run test
+      - run:
+          name: Run tests with prover
+          command: npm run test:prover
       - run:
           name: Run lints
           command: forge fmt --check --raw
