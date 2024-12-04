@@ -15,11 +15,11 @@ jobs:
           command: |
             apk add --update nodejs npm bash
       - run:
+          name: Install Node dependencies
+          command: npm ci
+      - run:
           name: Install Forge dependencies
           command: forge install
-      - run:
-          name: Install node dependencies
-          command: npm ci
       - run:
           name: Run tests
           command: npm run test
