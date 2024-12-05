@@ -117,18 +117,6 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
     }
 
     /**
-     * @notice Ensures that the _msgSender() is either an authorized identity or the manager before proceeding
-     */
-    modifier onlyAuthorizedIdentityOrManager() {
-        ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
-        require(
-            $.authorizedIdentities[_msgSender()] || _msgSender() == $.managerIdentity,
-            "ArianeeLost: Caller must be an authorized identity or the manager"
-        );
-        _;
-    }
-
-    /**
      * @notice You can change the trusted forwarder after initial deployment by overriding the `ERC2771ContextUpgradeable.trustedForwarder()` function
      */
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -193,8 +181,8 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
         uint256 _tokenId
     ) external onlyAuthorizedIdentity {
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
-        require($.tokenMissingStatus[_tokenId] == true);
-        require($.tokenStolenStatus[_tokenId] == false);
+        require($.tokenMissingStatus[_tokenId] == true, "ArianeeLost: The SmartAsset must be marked as missing");
+        require($.tokenStolenStatus[_tokenId] == false, "ArianeeLost: The SmartAsset is already marked as stolen");
 
         $.tokenStolenStatus[_tokenId] = true;
         $.tokenStolenIssuer[_tokenId] = _msgSender();
@@ -208,9 +196,12 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
      */
     function unsetStolenStatus(
         uint256 _tokenId
-    ) external onlyAuthorizedIdentityOrManager {
+    ) external {
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
-        require(_msgSender() == $.tokenStolenIssuer[_tokenId] || _msgSender() == $.managerIdentity);
+        require(
+            _msgSender() == $.tokenStolenIssuer[_tokenId] || _msgSender() == $.managerIdentity,
+            "ArianeeLost: Not the issuer nor the manager"
+        );
 
         $.tokenStolenStatus[_tokenId] = false;
         $.tokenStolenIssuer[_tokenId] = address(0);

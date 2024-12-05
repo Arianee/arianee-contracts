@@ -17,10 +17,11 @@ contract ArianeeIdentityTest is Test {
     address proxyAdmin = vm.addr(1);
     address admin = address(this); // Admin is likely the "Arianee Foundation"
 
-    address forwarder = vm.addr(2);
-    address bouncer = vm.addr(3);
+    address validator = vm.addr(2);
+    address forwarder = vm.addr(3);
+    address bouncer = vm.addr(4);
 
-    address unknown = vm.addr(4);
+    address unknown = vm.addr(5);
     address user1 = vm.addr(6);
 
     ArianeeIdentity arianeeIdentityProxy;
@@ -31,7 +32,10 @@ contract ArianeeIdentityTest is Test {
         opts.constructorData = abi.encode(forwarder);
 
         address arianeeIdentityProxyAddr = Upgrades.deployTransparentProxy(
-            "ArianeeIdentity.sol", proxyAdmin, abi.encodeCall(ArianeeIdentity.initialize, (bouncer, admin)), opts
+            "ArianeeIdentity.sol",
+            proxyAdmin,
+            abi.encodeCall(ArianeeIdentity.initialize, (admin, bouncer, validator)),
+            opts
         );
 
         arianeeIdentityProxy = ArianeeIdentity(arianeeIdentityProxyAddr);
@@ -43,13 +47,17 @@ contract ArianeeIdentityTest is Test {
         console.log("Default: %s", msg.sender);
         console.log("ProxyAdmin: %s", proxyAdmin);
         console.log("Admin: %s", admin);
+        console.log("Validator: %s", validator);
         console.log("Forwarder: %s", forwarder);
         console.log("Bouncer: %s", bouncer);
         console.log("Unknown: %s", unknown);
         console.log("User1: %s", user1);
+        // Contracts
+        console.log("ArianeeIdentityProxy: %s", address(arianeeIdentityProxy));
+        console.log("ArianeeIdentityImpl: %s", arianeeIdentityImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -58,11 +66,15 @@ contract ArianeeIdentityTest is Test {
         vm.assume(addr != proxyAdmin); // Make sure `addr` is not the proxy admin address
         vm.assume(addr != admin); // Make sure `addr` is not the admin address
 
+        vm.assume(addr != validator); // Make sure `addr` is not the validator address
         vm.assume(addr != forwarder); // Make sure `addr` is not the forwarder address
         vm.assume(addr != bouncer); // Make sure `addr` is not the bouncer address
 
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
         vm.assume(addr != user1); // Make sure `addr` is not the first user address
+
+        vm.assume(addr != address(arianeeIdentityProxy)); // Make sure `addr` is not the ArianeeIdentity proxy address
+        vm.assume(addr != arianeeIdentityImplAddr); // Make sure `addr` is not the ArianeeIdentity implementation address
         _;
     }
 
@@ -72,7 +84,7 @@ contract ArianeeIdentityTest is Test {
 
     function test_addAddressToApprovedList(
         address _newIdentity
-    ) public assumeIsNotKnownAddress(_newIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(_newIdentity) {
         vm.startPrank(bouncer);
 
         bytes3 addressId = arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
@@ -85,10 +97,10 @@ contract ArianeeIdentityTest is Test {
 
     function test_failUnauthorized_addAddressToApprovedList(
         address _newIdentity
-    ) public assumeIsNotKnownAddress(_newIdentity) {
-        vm.startPrank(admin);
+    ) public assumeIsNotKnownOrZeroAddress(_newIdentity) {
+        vm.startPrank(unknown);
 
-        vm.expectRevert();
+        vm.expectRevert("ArianeeIdentity: Not the bouncer");
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
 
         vm.stopPrank();
@@ -96,7 +108,7 @@ contract ArianeeIdentityTest is Test {
 
     function test_removeAddressFromApprovedList(
         address _identity
-    ) public assumeIsNotKnownAddress(_identity) {
+    ) public assumeIsNotKnownOrZeroAddress(_identity) {
         vm.startPrank(bouncer);
 
         arianeeIdentityProxy.addAddressToApprovedList(_identity);
@@ -111,10 +123,10 @@ contract ArianeeIdentityTest is Test {
 
     function test_unauthorized_removeAddressFromApprovedList(
         address _identity
-    ) public assumeIsNotKnownAddress(_identity) {
-        vm.startPrank(admin);
+    ) public assumeIsNotKnownOrZeroAddress(_identity) {
+        vm.startPrank(unknown);
 
-        vm.expectRevert();
+        vm.expectRevert("ArianeeIdentity: Not the bouncer");
         arianeeIdentityProxy.removeAddressFromApprovedList(_identity);
 
         vm.stopPrank();
@@ -124,7 +136,7 @@ contract ArianeeIdentityTest is Test {
         string calldata _uri,
         bytes32 _imprint,
         address _newIdentity
-    ) public assumeIsNotKnownAddress(_newIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(_newIdentity) {
         vm.startPrank(bouncer);
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
         vm.stopPrank();
@@ -147,7 +159,7 @@ contract ArianeeIdentityTest is Test {
         // Test Revert Scenarios
         // Ensure non-approved address cannot call the function
         vm.startPrank(address(0x9999));
-        vm.expectRevert();
+        vm.expectRevert("ArianeeIdentity: Address not approved");
         arianeeIdentityProxy.updateInformations("https://fake-uri.com", keccak256("invalid"));
         vm.stopPrank();
     }
@@ -156,7 +168,7 @@ contract ArianeeIdentityTest is Test {
         string calldata _uriToValidate,
         bytes32 _imprintToValidate,
         address _newIdentity
-    ) public assumeIsNotKnownAddress(_newIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(_newIdentity) {
         vm.startPrank(bouncer);
 
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
@@ -166,7 +178,7 @@ contract ArianeeIdentityTest is Test {
         arianeeIdentityProxy.updateInformations(_uriToValidate, _imprintToValidate);
         vm.stopPrank();
 
-        vm.startPrank(admin); // admin is validator
+        vm.startPrank(validator);
 
         vm.expectEmit();
         emit URIValidate(_newIdentity, _uriToValidate, _imprintToValidate);
@@ -210,7 +222,10 @@ contract ArianeeIdentityTest is Test {
         vm.stopPrank();
     }
 
-    function test_updateCompromiseDate(address _identity, uint256 _compromiseDate) public {
+    function test_updateCompromiseDate(
+        address _identity,
+        uint256 _compromiseDate
+    ) public assumeIsNotKnownOrZeroAddress(_identity) {
         vm.startPrank(bouncer);
         vm.expectEmit();
         emit IdentityCompromised(_identity, _compromiseDate);
@@ -244,7 +259,7 @@ contract ArianeeIdentityTest is Test {
     function test_updateBouncerAddress(
         address _newBouncerAddress,
         address _newIdentity
-    ) public assumeIsNotKnownAddress(_newIdentity) {
+    ) public assumeIsNotKnownOrZeroAddress(_newBouncerAddress) assumeIsNotKnownOrZeroAddress(_newIdentity) {
         // try a first call with the original bouncer
         vm.startPrank(bouncer);
 
@@ -261,7 +276,7 @@ contract ArianeeIdentityTest is Test {
 
         // original bouncer should not be able to call the function
         vm.startPrank(bouncer);
-        vm.expectRevert();
+        vm.expectRevert("ArianeeIdentity: Not the bouncer");
         arianeeIdentityProxy.addAddressToApprovedList(_newIdentity);
         vm.stopPrank();
 
@@ -280,7 +295,7 @@ contract ArianeeIdentityTest is Test {
 
     function test_updateValidatorAddress(
         address _newValidatorAddress
-    ) public {
+    ) public assumeIsNotKnownOrZeroAddress(_newValidatorAddress) {
         vm.startPrank(admin);
 
         vm.expectEmit();
