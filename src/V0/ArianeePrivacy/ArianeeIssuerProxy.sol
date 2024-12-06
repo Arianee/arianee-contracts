@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { console } from "forge-std/Test.sol";
-
 // Stateless
 import { IArianeeStore } from "../Interfaces/IArianeeStore.sol";
 import { IArianeeSmartAsset } from "../Interfaces/IArianeeSmartAsset.sol";
