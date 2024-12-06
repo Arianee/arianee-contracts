@@ -26,7 +26,6 @@
     "@arianee/core": "^1.86.0",
     "@arianee/privacy-circuits": "^1.86.0",
     "commander": "^12.1.0",
-    "cross-process-lock": "^2.1.1",
     "ethers": "^6.13.4",
     "node-ipc": "^12.0.0",
     "tslog": "^4.9.3"

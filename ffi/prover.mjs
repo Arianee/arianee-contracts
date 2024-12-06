@@ -6,7 +6,6 @@ import { Core } from "@arianee/core";
 import { Prover } from "@arianee/privacy-circuits";
 import { AbiCoder, Wallet, ZeroAddress, zeroPadValue } from "ethers";
 import { spawn } from "child_process";
-import { lock } from "cross-process-lock";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { ProtocolClientV1 } from "@arianee/arianee-protocol-client";
 
@@ -33,7 +32,6 @@ process.on("SIGTERM", shutdown);
 // Constants
 const PROVER_IPC_SERVER_ID = "prover";
 const PROVER_PID_FILE = "./prover.pid";
-const PROVER_PID_FILE_LOCK = `${PROVER_PID_FILE}.lock`;
 
 // IPC Configuration
 IPC.config.silent = true;
@@ -81,11 +79,9 @@ program
   .action(async (args) => {
     if (!existsSync(PROVER_PID_FILE)) writeFileSync(PROVER_PID_FILE, "0");
 
-    const unlock = await lock(PROVER_PID_FILE);
     const pid = parseInt(readFileSync(PROVER_PID_FILE).toString());
     if (pid !== 0) {
       logger.warn("Prover already running");
-      unlock();
       stdoutWriteExit(["bool"], [true]); // Exit without error
     }
 
@@ -98,13 +94,11 @@ program
         logger.info("Server started");
         writeFileSync(PROVER_PID_FILE, childProcess.pid.toString());
         childProcess.unref();
-        unlock();
         stdoutWriteExit(["bool"], [true]);
       }
     });
     childProcess.on("error", (err) => {
       logger.error(err);
-      unlock();
       stdoutWriteExit(["bool"], [false], 1);
     });
   });
@@ -200,7 +194,6 @@ program
   .action(async () => {
     if (!existsSync(PROVER_PID_FILE)) {
       logger.warn("Server not running");
-      if (existsSync(PROVER_PID_FILE_LOCK)) rmSync(PROVER_PID_FILE_LOCK);
       return;
     }
 
@@ -212,7 +205,6 @@ program
       logger.error("Server could not be stopped");
     } finally {
       rmSync(PROVER_PID_FILE);
-      rmSync(PROVER_PID_FILE_LOCK);
     }
   });
 
@@ -235,25 +227,12 @@ async function issuerProxy_computeCommitmentHash(prover, protocolV1, args) {
   return { types: ["uint256"], values: [commitmentHashAsHex] };
 }
 async function issuerProxy_computeIntentHash(prover, protocolV1, args) {
-  const decodedArgs = decodeArgs(["string", "bytes", "bool"], args);
+  const decodedArgs = decodeArgs(["string", "string[]", "bytes", "bool"], args);
   const { intentHashAsStr } = await prover.issuerProxy.computeIntentHash({
     protocolV1,
     fragment: decodedArgs[0],
-    values: decodeArgs(
-      [
-        "address",
-        "uint256",
-        "uint256",
-        "bytes32",
-        "string",
-        "address",
-        "uint256",
-        "bool",
-        "address",
-      ],
-      decodedArgs[1]
-    ),
-    needsCreditNoteProof: decodedArgs[2],
+    values: decodeArgs(decodedArgs[1], decodedArgs[2]),
+    needsCreditNoteProof: decodedArgs[3],
   });
   return { types: ["string"], values: [intentHashAsStr] };
 }

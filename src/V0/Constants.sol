@@ -22,3 +22,8 @@ uint256 constant CREDIT_TYPE_CERTIFICATE = 0;
 uint256 constant CREDIT_TYPE_MESSAGE = 1;
 uint256 constant CREDIT_TYPE_EVENT = 2;
 uint256 constant CREDIT_TYPE_UPDATE = 3;
+
+// ArianeeIssuerProxy
+uint256 constant SELECTOR_SIZE = 4;
+uint256 constant OWNERSHIP_PROOF_SIZE = 352;
+uint256 constant CREDIT_NOTE_PROOF_SIZE = 384;

@@ -21,3 +21,6 @@ docs/
 
 # Node.js
 node_modules/
+
+# Test related files
+prover.pid
