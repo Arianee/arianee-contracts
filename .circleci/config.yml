@@ -28,7 +28,7 @@ jobs:
           command: npm run test:prover -- --fuzz-runs 1
       - run:
           name: Run lint
-          command: forge fmt --check --raw
+          command: forge fmt --check
 
 workflows:
   test:
