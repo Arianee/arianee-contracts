@@ -49,9 +49,12 @@ contract ArianeeSmartAssetUpdateTest is Test {
         console.log("SmartAsset: %s", smartAsset);
         console.log("Store: %s", store);
         console.log("Unknown: %s", unknown);
+        // Contracts
+        console.log("ArianeeSmartAssetUpdateProxy: %s", address(arianeeSmartAssetUpdateProxy));
+        console.log("ArianeeSmartAssetUpdateImpl: %s", arianeeSmartAssetUpdateImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -65,6 +68,9 @@ contract ArianeeSmartAssetUpdateTest is Test {
         vm.assume(addr != store); // Make sure `addr` is not the store address
 
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
+
+        vm.assume(addr != address(arianeeSmartAssetUpdateProxy)); // Make sure `addr` is not the ArianeeSmartAssetUpdate proxy address
+        vm.assume(addr != arianeeSmartAssetUpdateImplAddr); // Make sure `addr` is not the ArianeeSmartAssetUpdate implementation address
         _;
     }
 
@@ -81,7 +87,7 @@ contract ArianeeSmartAssetUpdateTest is Test {
         bytes32 imprint,
         address issuer,
         uint256 rewards
-    ) public assumeIsNotKnownAddress(issuer) {
+    ) public assumeIsNotKnownOrZeroAddress(issuer) {
         vm.startPrank(store);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.issuerOf.selector), abi.encode(issuer));
         vm.expectEmit();
@@ -113,7 +119,7 @@ contract ArianeeSmartAssetUpdateTest is Test {
         bytes32 imprint,
         address issuer,
         uint256 rewards
-    ) public assumeIsNotKnownAddress(issuer) {
+    ) public assumeIsNotKnownOrZeroAddress(issuer) {
         vm.startPrank(store);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.issuerOf.selector), abi.encode(address(0))); // Mock issuerOf to return zero address instead of issuer
         vm.expectRevert("ArianeeSmartAssetUpdate: Invalid `_issuer`");
@@ -146,7 +152,7 @@ contract ArianeeSmartAssetUpdateTest is Test {
         address issuer,
         uint256 rewards,
         address from
-    ) public assumeIsNotKnownAddress(issuer) assumeIsNotKnownAddress(from) {
+    ) public assumeIsNotKnownOrZeroAddress(issuer) assumeIsNotKnownOrZeroAddress(from) {
         vm.startPrank(store);
 
         // Update a SmartAsset first to add some rewards
@@ -163,7 +169,10 @@ contract ArianeeSmartAssetUpdateTest is Test {
         vm.stopPrank();
     }
 
-    function test_readUpdateSmartAsset_isOperator(uint256 tokenId, address from) public assumeIsNotKnownAddress(from) {
+    function test_readUpdateSmartAsset_isOperator(
+        uint256 tokenId,
+        address from
+    ) public assumeIsNotKnownOrZeroAddress(from) {
         vm.startPrank(store);
         vm.mockCall(smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.canOperate.selector), abi.encode(false)); // Mock canOperate to return false
         vm.expectRevert("ArianeeSmartAssetUpdate: Not an operator");
@@ -172,7 +181,10 @@ contract ArianeeSmartAssetUpdateTest is Test {
         vm.stopPrank();
     }
 
-    function test_readUpdateSmartAsset_onlyStore(uint256 tokenId, address from) public assumeIsNotKnownAddress(from) {
+    function test_readUpdateSmartAsset_onlyStore(
+        uint256 tokenId,
+        address from
+    ) public assumeIsNotKnownOrZeroAddress(from) {
         vm.startPrank(unknown);
         vm.expectRevert(
             abi.encodeWithSelector(

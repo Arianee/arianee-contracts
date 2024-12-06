@@ -18,3 +18,9 @@ docs/
 
 .idea/
 .history
+
+# Node.js
+node_modules/
+
+# Test related files
+prover.pid

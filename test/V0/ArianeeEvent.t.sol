@@ -59,9 +59,12 @@ contract ArianeeEventTest is Test {
         console.log("Store: %s", store);
         console.log("Whitelist: %s", whitelist);
         console.log("Unknown: %s", unknown);
+        // Contracts
+        console.log("ArianeeEventProxy: %s", address(arianeeEventProxy));
+        console.log("ArianeeEventImpl: %s", arianeeEventImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -76,6 +79,9 @@ contract ArianeeEventTest is Test {
         vm.assume(addr != whitelist); // Make sure `addr` is not the whitelist address
 
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
+
+        vm.assume(addr != address(arianeeEventProxy)); // Make sure `addr` is not the ArianeeEvent proxy address
+        vm.assume(addr != arianeeEventImplAddr); //  Make sure `addr` is not the ArianeeEvent implementation address
         _;
     }
 
@@ -94,7 +100,7 @@ contract ArianeeEventTest is Test {
         string calldata uri,
         uint256 rewards,
         address provider
-    ) public assumeIsNotKnownAddress(provider) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) {
         vm.startPrank(store);
         vm.mockCall(
             smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.tokenCreation.selector), abi.encode(block.timestamp)
@@ -123,7 +129,7 @@ contract ArianeeEventTest is Test {
         string calldata uri,
         uint256 rewards,
         address provider
-    ) public assumeIsNotKnownAddress(provider) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) {
         vm.startPrank(store);
         vm.mockCall(
             smartAsset, abi.encodeWithSelector(IArianeeSmartAsset.tokenCreation.selector), abi.encode(block.timestamp)
@@ -184,7 +190,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -218,7 +224,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -251,7 +257,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.assume(eventId != eventId2); // Make sure `eventId` and `eventId2` are different
 
         vm.startPrank(store);
@@ -288,7 +294,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -332,7 +338,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -366,7 +372,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -410,7 +416,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -451,7 +457,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -489,7 +495,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -522,7 +528,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -550,7 +556,7 @@ contract ArianeeEventTest is Test {
         address provider,
         address sender,
         bool active
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -585,7 +591,7 @@ contract ArianeeEventTest is Test {
         address issuer,
         address sender,
         bool active
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -622,7 +628,7 @@ contract ArianeeEventTest is Test {
         address provider,
         address sender,
         bool active
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -660,7 +666,7 @@ contract ArianeeEventTest is Test {
         address provider,
         address sender,
         bool active
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -692,7 +698,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -731,7 +737,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -827,7 +833,7 @@ contract ArianeeEventTest is Test {
         uint256 rewards,
         address provider,
         address sender
-    ) public assumeIsNotKnownAddress(provider) assumeIsNotKnownAddress(sender) {
+    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
         vm.assume(eventId != eventId2); // Make sure `eventId` and `eventId2` are different
 
         vm.startPrank(store);

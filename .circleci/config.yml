@@ -15,14 +15,20 @@ jobs:
           command: |
             apk add --update nodejs npm bash
       - run:
+          name: Install Node dependencies
+          command: npm ci
+      - run:
           name: Install Forge dependencies
           command: forge install
       - run:
           name: Run tests
-          command: forge test --fail-fast
+          command: npm run test -- --fuzz-runs 1
       - run:
-          name: Run lints
-          command: forge fmt --check --raw
+          name: Run tests with prover
+          command: npm run test:prover -- --fuzz-runs 1
+      - run:
+          name: Run lint
+          command: forge fmt --check
 
 workflows:
   test:
