@@ -2,37 +2,11 @@
 pragma solidity 0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { OwnershipProof } from "@arianee/V0/ArianeePrivacy/ArianeeIssuerProxy.sol";
 import { ProverFfiHelper } from "./ProverFfiHelper.sol";
+import { ProverTestContext } from "../ProverTestContext.sol";
 
-// TODO: Will move this once ArianeeIssuerProxy is migrated
-struct OwnershipProof {
-    uint256[2] _pA; // 64 bytes
-    uint256[2][2] _pB; // 128 bytes
-    uint256[2] _pC; // 64 bytes
-    uint256[3] _pubSignals; // 96 bytes
-} // Total: 352 bytes
-
-contract ProverFfiHelperTest is Test, ProverFfiHelper {
-    using Strings for uint256;
-
-    uint256 signerPk = 123;
-
-    string protocolVersion = "1.0";
-    uint256 chainId = 1337;
-
-    address aria = address(1);
-    address creditHistory = address(2);
-    address arianeeEvent = address(3);
-    address identity = address(4);
-    address smartAsset = address(5);
-    address store = address(6);
-    address lost = address(7);
-    address whitelist = address(8);
-    address arianeeMessage = address(9);
-    address smartAssetUpdate = address(10);
-    address issuerProxy = address(11);
-
+contract ProverFfiHelperTest is Test, ProverFfiHelper, ProverTestContext {
     /**
      * @notice This function showcase how to initialize the Prover from inside a test
      * @dev Its actually not called because we need a shared Prover instance for all tests files, so the Prover is initialized inside the `run-test-with-prover.sh` script
@@ -56,6 +30,31 @@ contract ProverFfiHelperTest is Test, ProverFfiHelper {
         );
     }
 
+    function test_a_displayInitArgs() public view {
+        // Dummy test to display `initArgs` used in the script `run-test-with-prover.sh`
+        console.log(
+            "InitArgs: %s",
+            vm.toString(
+                abi.encode(
+                    signerPk,
+                    protocolVersion,
+                    chainId,
+                    aria,
+                    creditHistory,
+                    arianeeEvent,
+                    identity,
+                    smartAsset,
+                    store,
+                    lost,
+                    whitelist,
+                    arianeeMessage,
+                    smartAssetUpdate,
+                    issuerProxy
+                )
+            )
+        );
+    }
+
     function test_issuerProxy_computeCommitmentHash() public {
         uint256 tokenId = 123;
         bytes memory res =
@@ -63,7 +62,7 @@ contract ProverFfiHelperTest is Test, ProverFfiHelper {
         uint256 commitmentHash = abi.decode(res, (uint256));
         assertEq(
             commitmentHash,
-            9_454_446_621_308_206_716_865_009_959_322_521_105_197_305_289_912_882_804_219_617_500_120_200_299_789
+            19_990_083_318_013_431_793_927_421_178_965_138_769_335_300_019_042_084_671_558_202_108_662_908_139_393
         );
     }
 
@@ -71,14 +70,15 @@ contract ProverFfiHelperTest is Test, ProverFfiHelper {
         string memory fragment = "hydrateToken";
 
         address creditNotePool = address(0);
-        uint256 commitmentHash = 0;
+        uint256 commitmentHash =
+            19_990_083_318_013_431_793_927_421_178_965_138_769_335_300_019_042_084_671_558_202_108_662_908_139_393;
         uint256 tokenId = 123;
         bytes32 imprint = bytes32(0);
         string memory uri = "https://example.com";
         address encryptedInitialKey = address(0);
         uint256 tokenRecoveryTimestamp = 0;
         bool initialKeyIsRequestKey = false;
-        address walletProvider = address(0);
+        address nmpProvider = address(0);
 
         bytes memory values = abi.encode(
             creditNotePool,
@@ -89,21 +89,33 @@ contract ProverFfiHelperTest is Test, ProverFfiHelper {
             encryptedInitialKey,
             tokenRecoveryTimestamp,
             initialKeyIsRequestKey,
-            walletProvider
+            nmpProvider
         );
+        string[] memory valuesTypes = new string[](9);
+        valuesTypes[0] = "address";
+        valuesTypes[1] = "uint256";
+        valuesTypes[2] = "uint256";
+        valuesTypes[3] = "bytes32";
+        valuesTypes[4] = "string";
+        valuesTypes[5] = "address";
+        valuesTypes[6] = "uint256";
+        valuesTypes[7] = "bool";
+        valuesTypes[8] = "address";
 
         bool needsCreditNoteProof = true;
 
         bytes memory res = super.proverFfi(
-            "exec", "issuerProxy_computeIntentHash", vm.toString(abi.encode(fragment, values, needsCreditNoteProof))
+            "exec",
+            "issuerProxy_computeIntentHash",
+            vm.toString(abi.encode(fragment, valuesTypes, values, needsCreditNoteProof))
         );
         string memory intentHash = abi.decode(res, (string));
-        assertEq(intentHash, "328043857320579633236278839090936276180185263485624913289048988456355199828");
+        assertEq(intentHash, "15031138045807712444003939045070684639770841660221804962640238267352455450456");
     }
 
     function test_issuerProxy_generateProof() public {
         uint256 tokenId = 123;
-        string memory intentHash = "328043857320579633236278839090936276180185263485624913289048988456355199828";
+        string memory intentHash = "15031138045807712444003939045070684639770841660221804962640238267352455450456";
 
         bytes memory res =
             super.proverFfi("exec", "issuerProxy_generateProof", vm.toString(abi.encode(tokenId, intentHash)));

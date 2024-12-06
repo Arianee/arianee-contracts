@@ -52,28 +52,6 @@ abstract contract ProverFfiHelper is Test {
         address smartAssetUpdate,
         address issuerProxy
     ) internal {
-        console.log(
-            "InitProverArgs: %s",
-            vm.toString(
-                abi.encode(
-                    signerPk,
-                    protocolVersion,
-                    chainId,
-                    aria,
-                    creditHistory,
-                    arianeeEvent,
-                    identity,
-                    smartAsset,
-                    store,
-                    lost,
-                    whitelist,
-                    arianeeMessage,
-                    smartAssetUpdate,
-                    issuerProxy
-                )
-            )
-        );
-
         bytes memory res = proverFfi(
             "init",
             vm.toString(
