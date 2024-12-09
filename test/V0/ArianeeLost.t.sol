@@ -259,7 +259,7 @@ contract ArianeeLostTest is Test {
         vm.stopPrank();
 
         vm.startPrank(unknown);
-        vm.expectRevert("ArianeeLost: Caller must be an authorized identity or the manager");
+        vm.expectRevert("ArianeeLost: Not the issuer nor the manager");
         arianeeLostProxy.unsetStolenStatus(tokenId);
 
         vm.clearMockedCalls();

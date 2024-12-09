@@ -3,68 +3,59 @@ pragma solidity 0.8.28;
 
 // Stateless
 import { IArianeeIdentity } from "./Interfaces/IArianeeIdentity.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+
+// Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // Utils
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-// ERC721
+// Access
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 /**
  * @title ArianeeIdentity
- * @notice This contract manage the identity of an issuer in the Arianee Protocol
+ * @notice This contract manage the identity of an issuer in the Arianee Protocol.
  * @dev https://docs.arianee.org
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
 contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgradeable, OwnableUpgradeable {
-    using Strings for uint256;
-
     /// @custom:storage-location erc7201:arianeeidentity.storage.v0
     struct ArianeeIdentityStorageV0 {
         /**
-         * @notice The full name of the issuer identity.
-         */
-        string name;
-        /**
-         * @notice The abbreviated name (symbol) of the issuer identity.
-         */
-        string symbol;
-        /**
-         * @notice Indicates if an address is on the approved list, allowing it to manage its URI and Imprint.
+         * @notice Indicates if an address is on the approved list, allowing it to manage its URI and imprint
          */
         mapping(address => bool) approvedList;
         /**
-         * @notice Links an address to its corresponding URI.
+         * @notice Links an address to its corresponding URI
          */
         mapping(address => string) addressToUri;
         /**
-         * @notice Links an address to its corresponding imprint (hash of associated data).
+         * @notice Links an address to its corresponding imprint (hash of associated data)
          */
         mapping(address => bytes32) addressToImprint;
         /**
-         * @notice Stores the pending URI update for an address before validation.
+         * @notice Stores the pending URI update for an address before validation
          */
         mapping(address => string) addressToWaitingUri;
         /**
-         * @notice Stores the pending imprint update for an address before validation.
+         * @notice Stores the pending imprint update for an address before validation
          */
         mapping(address => bytes32) addressToWaitingImprint;
         /**
-         * @notice Records the date when an address was marked as compromised.
+         * @notice Records the date when an address was marked as compromised
          */
         mapping(address => uint256) compromiseDate;
         /**
-         * @notice Maps a short identifier (bytes3) to its corresponding address.
+         * @notice Maps a short identifier (bytes3) to its corresponding address
          */
         mapping(bytes3 => address) addressListing;
         /**
-         * @notice The address of the bouncer, responsible for managing the approved list and compromise dates.
+         * @notice The address of the bouncer, responsible for managing the approved list and compromise dates
          */
         address bouncerAddress;
         /**
-         * @notice The address of the validator, responsible for validating pending URI and imprint updates.
+         * @notice The address of the validator, responsible for validating pending URI and imprint updates
          */
         address validatorAddress;
     }
@@ -81,14 +72,14 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
     }
 
     /**
-     * @notice Ensures that the specified address is on the approved list before executing the function.
-     * @dev Reverts if the address is not approved. Used to restrict function access to approved identities.
+     * @notice Ensures that the specified address is on the approved list before executing the function
+     * @dev Reverts if the address is not approved. Used to restrict function access to approved identities
      */
     modifier isApproved(
         address _identity
     ) {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-        require($.approvedList[_identity]);
+        require($.approvedList[_identity], "ArianeeIdentity: Address not approved");
         _;
     }
 
@@ -102,13 +93,14 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
         _disableInitializers();
     }
 
-    function initialize(address _newBouncerAddress, address _newValidatorAddress) public initializer {
-        __Ownable_init_unchained(_msgSender());
+    function initialize(
+        address _initialOwner,
+        address _newBouncerAddress,
+        address _newValidatorAddress
+    ) public initializer {
+        __Ownable_init_unchained(_initialOwner);
 
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-
-        $.name = "Arianee Identity";
-        $.symbol = "AriaID";
         $.bouncerAddress = _newBouncerAddress;
         $.validatorAddress = _newValidatorAddress;
     }
@@ -123,7 +115,7 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
         address _newIdentity
     ) external returns (bytes3) {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-        require(_msgSender() == $.bouncerAddress);
+        require(_msgSender() == $.bouncerAddress, "ArianeeIdentity: Not the bouncer");
         $.approvedList[_newIdentity] = true;
 
         bytes memory _bytesAddress = abi.encodePacked(_newIdentity);
@@ -144,7 +136,7 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
         address _identity
     ) external {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-        require(_msgSender() == $.bouncerAddress);
+        require(_msgSender() == $.bouncerAddress, "ArianeeIdentity: Not the bouncer");
         $.approvedList[_identity] = false;
         emit AddressApprovedRemoved(_identity);
     }
@@ -181,10 +173,11 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
         bytes32 _imprintToValidate
     ) external {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-        require(_msgSender() == $.validatorAddress);
-        require($.addressToWaitingImprint[_identity] == _imprintToValidate);
+        require(_msgSender() == $.validatorAddress, "ArianeeIdentity: Not the validator");
+        require($.addressToWaitingImprint[_identity] == _imprintToValidate, "ArianeeIdentity: No waiting imprint match");
         require(
-            keccak256(abi.encodePacked($.addressToWaitingUri[_identity])) == keccak256(abi.encodePacked(_uriToValidate))
+            keccak256(abi.encodePacked($.addressToWaitingUri[_identity])) == keccak256(abi.encodePacked(_uriToValidate)),
+            "ArianeeIdentity: No waiting URI match"
         );
 
         $.addressToUri[_identity] = $.addressToWaitingUri[_identity];
@@ -213,7 +206,7 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
      */
     function updateCompromiseDate(address _identity, uint256 _compromiseDate) external {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
-        require(_msgSender() == $.bouncerAddress);
+        require(_msgSender() == $.bouncerAddress, "ArianeeIdentity: Not the bouncer");
         $.compromiseDate[_identity] = _compromiseDate;
         emit IdentityCompromised(_identity, _compromiseDate);
     }
@@ -296,9 +289,9 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
     }
 
     /**
-     * @dev Convert a bytes in bytes3.
-     * @param _inBytes input bytes.
-     * @return _outBytes3 output bytes3.
+     * @dev Convert a bytes in bytes3
+     * @param _inBytes input bytes
+     * @return _outBytes3 output bytes3
      */
     function _convertBytesToBytes3(
         bytes memory _inBytes
