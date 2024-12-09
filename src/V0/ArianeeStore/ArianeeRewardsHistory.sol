@@ -4,11 +4,16 @@ pragma solidity 0.8.28;
 // Stateless
 import { IArianeeStore } from "../Interfaces/IArianeeStore.sol";
 import { IArianeeRewardsHistory } from "../Interfaces/IArianeeRewardsHistory.sol";
+import { ROLE_ADMIN, ROLE_ARIANEE_STORE } from "../Constants.sol";
 
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+// Utils
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+// Access
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title ArianeeRewardsHistory
@@ -16,7 +21,12 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
  * @dev https://docs.arianee.org
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
-contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771ContextUpgradeable {
+contract ArianeeRewardsHistory is
+    IArianeeRewardsHistory,
+    Initializable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable
+{
     /// @custom:storage-location erc7201:arianeerewardshistory.storage.v0
     struct ArianeeRewardsHistoryStorageV0 {
         /**
@@ -48,17 +58,6 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
     }
 
     /**
-     * @notice Ensures that the _msgSender() is the ArianeeStore contract
-     */
-    modifier onlyStore() {
-        require(
-            msg.sender == address(_getArianeeRewardsHistoryStorageV0().store),
-            "ArianeeRewardsHistory: This function can only be called by the ArianeeStore contract"
-        );
-        _;
-    }
-
-    /**
      * @notice You can change the trusted forwarder after initial deployment by overriding the `ERC2771ContextUpgradeable.trustedForwarder()` function
      */
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -68,16 +67,17 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
         _disableInitializers();
     }
 
-    function initialize(
-        address _storeAddress
-    ) public initializer {
+    function initialize(address _initialAdmin, address _storeAddress) public initializer {
+        _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
+
         ArianeeRewardsHistoryStorageV0 storage $ = _getArianeeRewardsHistoryStorageV0();
         $.store = IArianeeStore(_storeAddress);
     }
 
     // Token rewards
 
-    function setTokenReward(uint256 _tokenId, uint256 _rewards) public onlyStore {
+    function setTokenReward(uint256 _tokenId, uint256 _rewards) public onlyRole(ROLE_ARIANEE_STORE) {
         _getArianeeRewardsHistoryStorageV0().tokenToRewards[_tokenId] = _rewards;
     }
 
@@ -89,13 +89,13 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
 
     function resetTokenReward(
         uint256 _tokenId
-    ) public onlyStore {
+    ) public onlyRole(ROLE_ARIANEE_STORE) {
         _getArianeeRewardsHistoryStorageV0().tokenToRewards[_tokenId] = 0;
     }
 
     // Token NMP provider
 
-    function setTokenNmpProvider(uint256 _tokenId, address _nmpProvider) public onlyStore {
+    function setTokenNmpProvider(uint256 _tokenId, address _nmpProvider) public onlyRole(ROLE_ARIANEE_STORE) {
         _getArianeeRewardsHistoryStorageV0().tokenToNmpProvider[_tokenId] = _nmpProvider;
     }
 
@@ -107,7 +107,7 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
 
     // Token wallet provider
 
-    function setTokenWalletProvider(uint256 _tokenId, address _walletProvider) public onlyStore {
+    function setTokenWalletProvider(uint256 _tokenId, address _walletProvider) public onlyRole(ROLE_ARIANEE_STORE) {
         _getArianeeRewardsHistoryStorageV0().tokenToWalletProvider[_tokenId] = _walletProvider;
     }
 
@@ -115,5 +115,29 @@ contract ArianeeRewardsHistory is IArianeeRewardsHistory, Initializable, ERC2771
         uint256 _tokenId
     ) public view returns (address) {
         return _getArianeeRewardsHistoryStorageV0().tokenToWalletProvider[_tokenId];
+    }
+
+    // Overrides
+
+    function _contextSuffixLength()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
+    }
+
+    function _msgData()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _msgSender() internal view override (ERC2771ContextUpgradeable, ContextUpgradeable) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 }

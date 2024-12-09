@@ -20,6 +20,7 @@ import { IArianeeEvent } from "@arianee/V0/Interfaces/IArianeeEvent.sol";
 import { IArianeeMessage } from "@arianee/V0/Interfaces/IArianeeMessage.sol";
 import {
     ROLE_ADMIN,
+    ROLE_ARIANEE_STORE,
     CREDIT_TYPE_CERTIFICATE,
     CREDIT_TYPE_MESSAGE,
     CREDIT_TYPE_EVENT,
@@ -87,7 +88,7 @@ contract ArianeeStoreTest is Test {
         address arianeeCreditHistoryProxyAddr = Upgrades.deployTransparentProxy(
             "ArianeeCreditHistory.sol",
             proxyAdmin,
-            abi.encodeCall(ArianeeCreditHistory.initialize, (arianeeStoreProxyPreComputedAddr)),
+            abi.encodeCall(ArianeeCreditHistory.initialize, (admin, arianeeStoreProxyPreComputedAddr)),
             opts
         );
         arianeeCreditHistoryProxy = ArianeeCreditHistory(arianeeCreditHistoryProxyAddr);
@@ -96,7 +97,7 @@ contract ArianeeStoreTest is Test {
         address arianeeRewardsHistoryProxyAddr = Upgrades.deployTransparentProxy(
             "ArianeeRewardsHistory.sol",
             proxyAdmin,
-            abi.encodeCall(ArianeeCreditHistory.initialize, (arianeeStoreProxyPreComputedAddr)),
+            abi.encodeCall(ArianeeCreditHistory.initialize, (admin, arianeeStoreProxyPreComputedAddr)),
             opts
         );
         arianeeRewardsHistoryProxy = ArianeeRewardsHistory(arianeeRewardsHistoryProxyAddr);
@@ -224,6 +225,7 @@ contract ArianeeStoreTest is Test {
     // Initializer
 
     function test_initialize() public view {
+        assertTrue(arianeeStoreProxy.hasRole(ROLE_ADMIN, admin));
         assertFalse(arianeeStoreProxy.paused());
         assertEq(arianeeStoreProxy.creditPriceUSD(0), creditPricesUSD0);
         assertEq(arianeeStoreProxy.creditPriceUSD(1), creditPricesUSD1);
@@ -233,6 +235,12 @@ contract ArianeeStoreTest is Test {
         assertEq(arianeeStoreProxy.getCreditPrice(1), creditPricesUSD1 * ariaUSDExchange);
         assertEq(arianeeStoreProxy.getCreditPrice(2), creditPricesUSD2 * ariaUSDExchange);
         assertEq(arianeeStoreProxy.getCreditPrice(3), creditPricesUSD3 * ariaUSDExchange);
+
+        assertTrue(arianeeCreditHistoryProxy.hasRole(ROLE_ADMIN, admin));
+        assertTrue(arianeeCreditHistoryProxy.hasRole(ROLE_ARIANEE_STORE, address(arianeeStoreProxy)));
+
+        assertTrue(arianeeRewardsHistoryProxy.hasRole(ROLE_ADMIN, admin));
+        assertTrue(arianeeRewardsHistoryProxy.hasRole(ROLE_ARIANEE_STORE, address(arianeeStoreProxy)));
     }
 
     // Dispatch percentages

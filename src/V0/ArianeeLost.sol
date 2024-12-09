@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 // Stateless
 import { IArianeeLost } from "./Interfaces/IArianeeLost.sol";
 import { IArianeeSmartAsset } from "./Interfaces/IArianeeSmartAsset.sol";
+import { ROLE_ADMIN } from "./Constants.sol";
 
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -12,7 +13,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 // Access
-import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title ArianeeLost
@@ -20,7 +21,7 @@ import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/O
  * @dev https://docs.arianee.org
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
-contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, OwnableUpgradeable {
+contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, AccessControlUpgradeable {
     /// @custom:storage-location erc7201:arianeelost.storage.v0
     struct ArianeeLostStorageV0 {
         /**
@@ -127,11 +128,11 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
     }
 
     function initialize(
-        address _initialOwner,
+        address _initialAdmin,
         address _smartAssetAddress,
         address _managerIdentity
     ) public initializer {
-        __Ownable_init_unchained(_initialOwner);
+        _grantRole(ROLE_ADMIN, _initialAdmin);
 
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         $.smartAsset = IArianeeSmartAsset(_smartAssetAddress);
@@ -226,7 +227,7 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
      */
     function setManagerIdentity(
         address _managerIdentity
-    ) public onlyOwner {
+    ) public onlyRole(ROLE_ADMIN) {
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         $.managerIdentity = _managerIdentity;
         emit NewManagerIdentity(_managerIdentity);

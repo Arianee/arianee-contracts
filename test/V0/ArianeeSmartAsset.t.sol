@@ -60,9 +60,7 @@ contract ArianeeSmartAssetTest is Test {
         arianeeSmartAssetProxy = ArianeeSmartAsset(arianeeSmartAssetProxyAddr);
         arianeeSmartAssetImplAddr = Upgrades.getImplementationAddress(arianeeSmartAssetProxyAddr);
 
-        arianeeSmartAssetProxy.grantRole(ROLE_ARIANEE_STORE, store);
         vm.mockCall(store, abi.encodeWithSelector(IArianeeStore.dispatchRewardsAtFirstTransfer.selector), abi.encode());
-
         vm.mockCall(whitelist, abi.encodeWithSelector(IArianeeWhitelist.addWhitelistedAddress.selector), abi.encode());
     }
 
@@ -107,8 +105,10 @@ contract ArianeeSmartAssetTest is Test {
     // Initializer
 
     function test_initialize() public view {
-        assertFalse(arianeeSmartAssetProxy.paused());
         assertTrue(arianeeSmartAssetProxy.hasRole(ROLE_ADMIN, admin));
+        assertTrue(arianeeSmartAssetProxy.hasRole(ROLE_ARIANEE_STORE, store));
+        assertFalse(arianeeSmartAssetProxy.paused());
+
         assertEq(arianeeSmartAssetProxy.name(), ERC721_NAME);
         assertEq(arianeeSmartAssetProxy.symbol(), ERC721_SYMBOL);
     }

@@ -3,6 +3,7 @@ pragma solidity 0.8.28;
 
 // Stateless
 import { IArianeeIdentity } from "./Interfaces/IArianeeIdentity.sol";
+import { ROLE_ADMIN } from "./Constants.sol";
 
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -11,7 +12,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 // Access
-import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title ArianeeIdentity
@@ -19,7 +20,7 @@ import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/O
  * @dev https://docs.arianee.org
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
-contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgradeable, OwnableUpgradeable {
+contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgradeable, AccessControlUpgradeable {
     /// @custom:storage-location erc7201:arianeeidentity.storage.v0
     struct ArianeeIdentityStorageV0 {
         /**
@@ -94,11 +95,11 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
     }
 
     function initialize(
-        address _initialOwner,
+        address _initialAdmin,
         address _newBouncerAddress,
         address _newValidatorAddress
     ) public initializer {
-        __Ownable_init_unchained(_initialOwner);
+        _grantRole(ROLE_ADMIN, _initialAdmin);
 
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
         $.bouncerAddress = _newBouncerAddress;
@@ -271,7 +272,7 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
      */
     function updateBouncerAddress(
         address _newBouncerAddress
-    ) public onlyOwner {
+    ) public onlyRole(ROLE_ADMIN) {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
         $.bouncerAddress = _newBouncerAddress;
         emit SetAddress("bouncerAddress", _newBouncerAddress);
@@ -282,7 +283,7 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
      */
     function updateValidatorAddress(
         address _newValidatorAddress
-    ) public onlyOwner {
+    ) public onlyRole(ROLE_ADMIN) {
         ArianeeIdentityStorageV0 storage $ = _getArianeeIdentityStorageV0();
         $.validatorAddress = _newValidatorAddress;
         emit SetAddress("validatorAddress", _newValidatorAddress);

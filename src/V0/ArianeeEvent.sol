@@ -151,13 +151,13 @@ contract ArianeeEvent is
         __Pausable_init_unchained();
 
         _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
 
         ArianeeEventStorageV0 storage $ = _getArianeeEventStorageV0();
         $.smartAsset = IArianeeSmartAsset(_smartAssetAddress);
+        $.store = IArianeeStore(_storeAddress);
         $.whitelist = IArianeeWhitelist(_whitelistAddress);
         $.eventDestroyDelay = EVENT_DESTROY_DELAY; // Default to 1 year
-
-        setStoreAddress(_storeAddress);
     }
 
     /**
@@ -165,7 +165,7 @@ contract ArianeeEvent is
      * @dev Must be called by an authorized address
      * @param _eventId Event ID
      * @param _tokenId SmartAsset ID
-     * @param _imprint _imprint Imprint (hash of the event data)
+     * @param _imprint Imprint (hash of the event data)
      * @param _uri URI
      * @param _rewards Rewards for the action
      * @param _provider Address of the provider (actor that created the event)
@@ -316,16 +316,6 @@ contract ArianeeEvent is
     ) external onlyRole(ROLE_ADMIN) whenNotPaused {
         _getArianeeEventStorageV0().eventDestroyDelay = _newEventDestroyDelay;
         emit EventDestroyDelayUpdated(_newEventDestroyDelay);
-    }
-
-    /**
-     * @notice Set the address of the store contract
-     * @param _storeAddress Address of the store contract
-     */
-    function setStoreAddress(
-        address _storeAddress
-    ) public onlyRole(ROLE_ADMIN) {
-        _getArianeeEventStorageV0().store = IArianeeStore(_storeAddress);
     }
 
     /**

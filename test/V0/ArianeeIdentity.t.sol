@@ -12,6 +12,7 @@ import {
     IdentityCompromised,
     SetAddress
 } from "@arianee/V0/ArianeeIdentity.sol";
+import { ROLE_ADMIN } from "@arianee/V0/Constants.sol";
 
 contract ArianeeIdentityTest is Test {
     address proxyAdmin = vm.addr(1);
@@ -79,7 +80,7 @@ contract ArianeeIdentityTest is Test {
     }
 
     function test_initialize() public view {
-        assertEq(arianeeIdentityProxy.owner(), admin, "Owner not initialized");
+        assertTrue(arianeeIdentityProxy.hasRole(ROLE_ADMIN, admin), "Admin not initialized");
     }
 
     function test_addAddressToApprovedList(

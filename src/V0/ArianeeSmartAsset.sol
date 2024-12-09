@@ -148,6 +148,7 @@ contract ArianeeSmartAsset is
         __ERC721_init_unchained(ERC721_NAME, ERC721_SYMBOL);
 
         _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
 
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         $.store = IArianeeStore(_storeAddress);
