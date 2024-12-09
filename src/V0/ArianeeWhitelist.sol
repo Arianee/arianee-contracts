@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 // Stateless
 import { IArianeeWhitelist } from "./Interfaces/IArianeeWhitelist.sol";
 import { ROLE_ADMIN } from "./Constants.sol";
+
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
@@ -22,16 +23,16 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     /// @custom:storage-location erc7201:arianeewhitelist.storage.v0
     struct ArianeeWhitelistStorageV0 {
         /**
-         * @notice Tracks addresses that are whitelisted for specific SmartAsset.
+         * @notice Tracks addresses that are whitelisted for specific SmartAsset
          */
         mapping(uint256 => mapping(address => bool)) whitelistedAddress;
         /**
-         * @notice Tracks addresses blacklisted by token owners for specific SmartAsset.
+         * @notice Tracks addresses blacklisted by SmartAsset owners for specific SmartAsset
          */
         mapping(address => mapping(uint256 => mapping(address => bool))) optOutAddressPerOwner;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("arianeeevent.storage.v0")) - 1)) & ~bytes32(uint256(0xff))
+    // keccak256(abi.encode(uint256(keccak256("arianeewhitelist.storage.v0")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 public constant ArianeeWhitelistStorageV0Location =
         0x4765b9a90ccc6c0f74700205e150060852d2779ff79814ceccb7a3dccb624300;
 
@@ -51,7 +52,6 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
         _disableInitializers();
     }
 
-    // TODO A verifier nom du parametre initialadmin et le droit etc
     function initialize(
         address _initialAdmin
     ) public initializer {
@@ -59,8 +59,8 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     /**
-     * @notice Adds an address to the whitelist for a specific SmartAsset.
-     *  @dev Can only be called by contract authorized.
+     * @notice Adds an address to the whitelist for a specific SmartAsset
+     * @dev Can only be called by contract authorized
      */
     function addWhitelistedAddress(uint256 _tokenId, address _address) external onlyRole(ROLE_ADMIN) {
         ArianeeWhitelistStorageV0 storage $ = _getArianeeWhitelistStorageV0();
@@ -69,7 +69,7 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     /**
-     * @notice Checks if an address is whitelisted for a specific SmartAsset.
+     * @notice Checks if an address is whitelisted for a specific SmartAsset
      */
     function isWhitelisted(uint256 _tokenId, address _address) public view returns (bool _isWhitelisted) {
         ArianeeWhitelistStorageV0 storage $ = _getArianeeWhitelistStorageV0();
@@ -77,8 +77,8 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     /**
-     * @notice Adds or removes an address from the blacklist for a specific SmartAsset.
-     * @dev Blacklisting is managed per owner for the given SmartAsset.
+     * @notice Adds or removes an address from the blacklist for a specific SmartAsset
+     * @dev Blacklisting is managed per owner for the given SmartAsset
      */
     function addBlacklistedAddress(address _sender, uint256 _tokenId, bool _activate) external {
         ArianeeWhitelistStorageV0 storage $ = _getArianeeWhitelistStorageV0();
@@ -87,7 +87,7 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     /**
-     * @notice Checks if an address is blacklisted for a specific SmartAsset.
+     * @notice Checks if an address is blacklisted for a specific SmartAsset
      */
     function isBlacklisted(
         address _owner,
@@ -99,13 +99,15 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     /**
-     * @notice Checks if an address is authorized to send a message to the owner of a specific SmartAsset.
-     * @dev Authorization is based on whether the sender is whitelisted and not blacklisted by the token owner.
+     * @notice Checks if an address is authorized to send a message to the owner of a specific SmartAsset
+     * @dev Authorization is based on whether the sender is whitelisted and not blacklisted by the SmartAsset owner
      */
     function isAuthorized(uint256 _tokenId, address _sender, address _tokenOwner) external view returns (bool) {
         ArianeeWhitelistStorageV0 storage $ = _getArianeeWhitelistStorageV0();
         return ($.whitelistedAddress[_tokenId][_sender] && !isBlacklisted(_tokenOwner, _sender, _tokenId));
     }
+
+    // Overrides
 
     function _contextSuffixLength()
         internal
@@ -136,6 +138,6 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
 event WhitelistedAddressAdded(uint256 _tokenId, address _address);
 
 /**
- * @notice This emits when an address is blacklisted by a SmartAsset owner on a given token.
+ * @notice This emits when an address is blacklisted by a SmartAsset owner on a given token
  */
 event BlacklistedAddresAdded(address _sender, uint256 _tokenId, bool _activate);

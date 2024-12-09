@@ -12,6 +12,7 @@ contract ArianeeWhitelistTest is Test {
     address admin = address(this); // Admin is likely the "Arianee Foundation"
 
     address forwarder = vm.addr(2);
+
     address whitelistAdmin = vm.addr(3);
     address unknown = vm.addr(6);
 
@@ -37,10 +38,13 @@ contract ArianeeWhitelistTest is Test {
         console.log("Admin: %s", admin);
         console.log("Forwarder: %s", forwarder);
         console.log("Unknown: %s", unknown);
-        console.log("whitelistAdmin: %s", whitelistAdmin);
+        console.log("WhitelistAdmin: %s", whitelistAdmin);
+        // Contracts
+        console.log("ArianeeWhitelistProxy: %s", address(arianeeWhitelistProxy));
+        console.log("ArianeeWhitelistImpl: %s", arianeeWhitelistImplAddr);
     }
 
-    modifier assumeIsNotKnownAddress(
+    modifier assumeIsNotKnownOrZeroAddress(
         address addr
     ) {
         vm.assume(addr != address(0)); // Make sure `addr` is not the zero address
@@ -53,6 +57,9 @@ contract ArianeeWhitelistTest is Test {
 
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
         vm.assume(addr != whitelistAdmin); // Make sure `addr` is not the whitelistAdmin address
+
+        vm.assume(addr != address(arianeeWhitelistProxy)); // Make sure `addr` is not the ArianeeWhitelist proxy address
+        vm.assume(addr != arianeeWhitelistImplAddr); // Make sure `addr` is not the ArianeeWhitelist implementation address
         _;
     }
 
@@ -66,7 +73,10 @@ contract ArianeeWhitelistTest is Test {
         arianeeWhitelistProxy.initialize(unknown);
     }
 
-    function test_addWhitelistedAddress(uint256 _tokenId, address _address) public assumeIsNotKnownAddress(_address) {
+    function test_addWhitelistedAddress(
+        uint256 _tokenId,
+        address _address
+    ) public assumeIsNotKnownOrZeroAddress(_address) {
         vm.startPrank(whitelistAdmin);
 
         vm.expectEmit();
@@ -88,7 +98,10 @@ contract ArianeeWhitelistTest is Test {
         vm.stopPrank();
     }
 
-    function test_addBlacklistedAddress(address _sender, uint256 _tokenId) public assumeIsNotKnownAddress(_sender) {
+    function test_addBlacklistedAddress(
+        address _sender,
+        uint256 _tokenId
+    ) public assumeIsNotKnownOrZeroAddress(_sender) {
         vm.startPrank(unknown);
         vm.expectEmit();
         emit BlacklistedAddresAdded(_sender, _tokenId, true);
@@ -101,7 +114,7 @@ contract ArianeeWhitelistTest is Test {
         vm.stopPrank();
     }
 
-    function test_isAuthorized(uint256 _tokenId, address _sender) public assumeIsNotKnownAddress(_sender) {
+    function test_isAuthorized(uint256 _tokenId, address _sender) public assumeIsNotKnownOrZeroAddress(_sender) {
         vm.startPrank(whitelistAdmin);
 
         vm.expectEmit();
