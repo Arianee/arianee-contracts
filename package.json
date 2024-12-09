@@ -1,0 +1,34 @@
+{
+  "name": "arianee-contracts",
+  "version": "1.0.0",
+  "description": "Foundry based project housing smart contracts of the Arianee Protocol",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "prover": "node ./ffi/prover.mjs",
+    "test": "forge test --force --match-path \"./test/**/*.t.sol\"",
+    "test:prover": "bash ./run-test-with-prover.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arianee/arianee-contracts.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Arianee/arianee-contracts/issues"
+  },
+  "homepage": "https://github.com/Arianee/arianee-contracts#readme",
+  "devDependencies": {
+    "@arianee/arianee-protocol-client": "^1.86.0",
+    "@arianee/core": "^1.86.0",
+    "@arianee/privacy-circuits": "^1.86.0",
+    "commander": "^12.1.0",
+    "cross-process-lock": "^2.1.1",
+    "ethers": "^6.13.4",
+    "node-ipc": "^12.0.0",
+    "tslog": "^4.9.3"
+  }
+}
