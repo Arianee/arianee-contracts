@@ -45,8 +45,6 @@ contract ArianeeEventTest is Test {
         );
         arianeeEventProxy = ArianeeEvent(arianeeEventProxyAddr);
         arianeeEventImplAddr = Upgrades.getImplementationAddress(arianeeEventProxyAddr);
-
-        arianeeEventProxy.grantRole(ROLE_ARIANEE_STORE, store);
     }
 
     function test_a_displayAddresses() public view {
@@ -88,6 +86,8 @@ contract ArianeeEventTest is Test {
     // Initializer
 
     function test_initialize() public view {
+        assertTrue(arianeeEventProxy.hasRole(ROLE_ADMIN, admin));
+        assertTrue(arianeeEventProxy.hasRole(ROLE_ARIANEE_STORE, store));
         assertFalse(arianeeEventProxy.paused());
     }
 
@@ -591,7 +591,12 @@ contract ArianeeEventTest is Test {
         address issuer,
         address sender,
         bool active
-    ) public assumeIsNotKnownOrZeroAddress(provider) assumeIsNotKnownOrZeroAddress(sender) {
+    )
+        public
+        assumeIsNotKnownOrZeroAddress(provider)
+        assumeIsNotKnownOrZeroAddress(issuer)
+        assumeIsNotKnownOrZeroAddress(sender)
+    {
         vm.startPrank(store);
         // Create an event first
         vm.mockCall(
@@ -798,27 +803,6 @@ contract ArianeeEventTest is Test {
             abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
         );
         arianeeEventProxy.updateEventDestroyDelay(newEventDestroyDelay);
-        vm.stopPrank();
-    }
-
-    // Set ArianeeStore address
-
-    function test_setStoreAddress(
-        address newStoreAddr
-    ) public {
-        vm.startPrank(admin);
-        arianeeEventProxy.setStoreAddress(newStoreAddr);
-        vm.stopPrank();
-    }
-
-    function test_setStoreAddress_err_onlyAdmin(
-        address newStoreAddr
-    ) public {
-        vm.startPrank(unknown);
-        vm.expectRevert(
-            abi.encodeWithSelector(IAccessControl.AccessControlUnauthorizedAccount.selector, unknown, ROLE_ADMIN)
-        );
-        arianeeEventProxy.setStoreAddress(newStoreAddr);
         vm.stopPrank();
     }
 

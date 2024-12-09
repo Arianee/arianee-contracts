@@ -15,6 +15,7 @@ import {
     UnStolen
 } from "@arianee/V0/ArianeeLost.sol";
 import { IArianeeSmartAsset } from "@arianee/V0/Interfaces/IArianeeSmartAsset.sol";
+import { ROLE_ADMIN } from "@arianee/V0/Constants.sol";
 
 contract ArianeeLostTest is Test {
     address proxyAdmin = vm.addr(1);
@@ -81,7 +82,7 @@ contract ArianeeLostTest is Test {
     // Initializer
 
     function test_initialize() public view {
-        assertEq(arianeeLostProxy.owner(), admin, "Owner not initialized");
+        assertTrue(arianeeLostProxy.hasRole(ROLE_ADMIN, admin), "Admin not initialized");
         assertEq(arianeeLostProxy.getManagerIdentity(), manager, "Manager identity not initialized");
     }
 

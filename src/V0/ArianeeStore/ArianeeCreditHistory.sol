@@ -4,11 +4,16 @@ pragma solidity 0.8.28;
 // Stateless
 import { IArianeeStore } from "../Interfaces/IArianeeStore.sol";
 import { IArianeeCreditHistory } from "../Interfaces/IArianeeCreditHistory.sol";
+import { ROLE_ADMIN, ROLE_ARIANEE_STORE } from "../Constants.sol";
 
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+// Utils
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 // Meta Transactions
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+// Access
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 struct CreditBuy {
     uint256 price;
@@ -21,7 +26,12 @@ struct CreditBuy {
  * @dev https://docs.arianee.org
  * @author Arianee — The Most Widely Used Protocol for Tokenized Digital Product Passports: Open & Interoperable. Working with over 50+ global brands!
  */
-contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771ContextUpgradeable {
+contract ArianeeCreditHistory is
+    IArianeeCreditHistory,
+    Initializable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable
+{
     /// @custom:storage-location erc7201:arianeecredithistory.storage.v0
     struct ArianeeCreditHistoryStorageV0 {
         /**
@@ -53,17 +63,6 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
     }
 
     /**
-     * @notice Ensures that the _msgSender() is the ArianeeStore contract
-     */
-    modifier onlyStore() {
-        require(
-            msg.sender == address(_getArianeeCreditHistoryStorageV0().store),
-            "ArianeeCreditHistory: This function can only be called by the ArianeeStore contract"
-        );
-        _;
-    }
-
-    /**
      * @notice You can change the trusted forwarder after initial deployment by overriding the `ERC2771ContextUpgradeable.trustedForwarder()` function
      */
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -73,9 +72,10 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
         _disableInitializers();
     }
 
-    function initialize(
-        address _storeAddress
-    ) public initializer {
+    function initialize(address _initialAdmin, address _storeAddress) public initializer {
+        _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
+
         ArianeeCreditHistoryStorageV0 storage $ = _getArianeeCreditHistoryStorageV0();
         $.store = IArianeeStore(_storeAddress);
     }
@@ -87,7 +87,12 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
      * @param _quantity Quantity of credit buyed
      * @param _type Type of credit
      */
-    function addCreditHistory(address _spender, uint256 _price, uint256 _quantity, uint256 _type) external onlyStore {
+    function addCreditHistory(
+        address _spender,
+        uint256 _price,
+        uint256 _quantity,
+        uint256 _type
+    ) external onlyRole(ROLE_ARIANEE_STORE) {
         ArianeeCreditHistoryStorageV0 storage $ = _getArianeeCreditHistoryStorageV0();
         $.addrToTypeToCreditHistory[_spender][_type].push(CreditBuy({ price: _price, quantity: _quantity }));
         $.addrToTypeToTotalCredit[_spender][_type] = $.addrToTypeToTotalCredit[_spender][_type] + _quantity;
@@ -99,7 +104,11 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
      * @param _type Type of credit
      * @param _quantity Quantity of credit buyed
      */
-    function consumeCredits(address _spender, uint256 _type, uint256 _quantity) external onlyStore returns (uint256) {
+    function consumeCredits(
+        address _spender,
+        uint256 _type,
+        uint256 _quantity
+    ) external onlyRole(ROLE_ARIANEE_STORE) returns (uint256) {
         ArianeeCreditHistoryStorageV0 storage $ = _getArianeeCreditHistoryStorageV0();
         require($.addrToTypeToTotalCredit[_spender][_type] > 0, "ArianeeCreditHistory: Unknown credit type");
 
@@ -157,5 +166,29 @@ contract ArianeeCreditHistory is IArianeeCreditHistory, Initializable, ERC2771Co
      */
     function balanceOf(address _spender, uint256 _type) external view returns (uint256 _totalCredits) {
         _totalCredits = _getArianeeCreditHistoryStorageV0().addrToTypeToTotalCredit[_spender][_type];
+    }
+
+    // Overrides
+
+    function _contextSuffixLength()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
+    }
+
+    function _msgData()
+        internal
+        view
+        override (ERC2771ContextUpgradeable, ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _msgSender() internal view override (ERC2771ContextUpgradeable, ContextUpgradeable) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
     }
 }

@@ -32,6 +32,23 @@ You can access the reports by following the links below:
 
 ## Repository Usage
 
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/download/) _(v20.3.0)_
+- [Forge CLI](https://book.getfoundry.sh/getting-started/installation) _(v0.2.0)_
+
+### Installation
+
+To install the project, run the following commands:
+
+```shell
+# Install Node dependencies
+$ npm install
+
+# Install Forge dependencies
+$ forge install
+```
+
 ### Build
 
 To build the project, run the following command:
@@ -42,10 +59,14 @@ $ forge build
 
 ### Test
 
-To run the tests, use the following command:
+To run the tests, use the following commands:
 
 ```shell
-$ forge test
+# Run the tests that end with `.t.sol`
+$ npm run test
+
+# Run the tests that end with `.t.p.sol` along with a prover server
+$ npm run test:prover
 ```
 
 ### Format
