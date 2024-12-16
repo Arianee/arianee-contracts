@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.28;
 
-import { Test, console } from "forge-std/Test.sol";
+import { Script, console } from "forge-std/Script.sol";
 
 /**
  * @title ProverFfiHelper
  * @notice Helper contract to interact with the Prover from `@arianee/privacy-circuits` through FFI
  * @dev WARNING: It is not recommended to add fuzzy tests on tests contracts that inherit from this helper as it may be particularly slow
  */
-abstract contract ProverFfiHelper is Test {
+abstract contract ProverFfiHelper is Script {
     function proverFfi(string memory command, string memory args) internal returns (bytes memory) {
         return proverFfi(command, "", args);
     }
@@ -74,6 +74,6 @@ abstract contract ProverFfiHelper is Test {
             )
         );
         bool success = abi.decode(res, (bool));
-        assertTrue(success, "Prover init failed"); // Doesn't matter if only the first assert is successful
+        vm.assertTrue(success, "Prover init failed"); // Doesn't matter if only the first assert is successful
     }
 }

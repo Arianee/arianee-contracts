@@ -154,7 +154,7 @@ contract ArianeeSmartAsset is
         $.store = IArianeeStore(_storeAddress);
         $.whitelist = IArianeeWhitelist(_whitelistAddress);
 
-        setUriBase(URI_BASE);
+        _setBaseURI(URI_BASE);
     }
 
     /**
@@ -513,15 +513,19 @@ contract ArianeeSmartAsset is
 
     /**
      * @notice Set the base URI for all SmartAssets
-     * @param _newURIBase new base URI
+     * @param _newBaseURI new base URI
      */
     function setUriBase(
-        string memory _newURIBase
+        string memory _newBaseURI
     ) public onlyRole(ROLE_ADMIN) {
-        ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
-        $.baseURI = _newURIBase;
+        _setBaseURI(_newBaseURI);
+    }
 
-        emit SetNewUriBase(_newURIBase);
+    /**
+     * @notice Returns the address of the ArianeeStore contract
+     */
+    function getStoreAddress() external view returns (address) {
+        return address(_getArianeeSmartAssetStorageV0().store);
     }
 
     // Public Overrides
@@ -619,6 +623,15 @@ contract ArianeeSmartAsset is
 
     function _baseURI() internal view override returns (string memory) {
         return _getArianeeSmartAssetStorageV0().baseURI;
+    }
+
+    function _setBaseURI(
+        string memory _newBaseURI
+    ) internal {
+        ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
+        $.baseURI = _newBaseURI;
+
+        emit SetNewUriBase(_newBaseURI);
     }
 
     function _update(

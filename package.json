@@ -7,6 +7,8 @@
     "test": "test"
   },
   "scripts": {
+    "script": "bash ./run-script-with-env.sh",
+    "verify": "bash ./verify-from-run-file.sh",
     "prover": "node ./ffi/prover.mjs",
     "test": "forge test --force --match-path \"./test/**/*.t.sol\"",
     "test:prover": "bash ./run-test-with-prover.sh"

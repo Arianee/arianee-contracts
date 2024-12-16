@@ -136,7 +136,8 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
 
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         $.smartAsset = IArianeeSmartAsset(_smartAssetAddress);
-        setManagerIdentity(_managerIdentity);
+
+        _setManagerIdentity(_managerIdentity);
     }
 
     /**
@@ -228,9 +229,7 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
     function setManagerIdentity(
         address _managerIdentity
     ) public onlyRole(ROLE_ADMIN) {
-        ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
-        $.managerIdentity = _managerIdentity;
-        emit NewManagerIdentity(_managerIdentity);
+        _setManagerIdentity(_managerIdentity);
     }
 
     /**
@@ -275,6 +274,20 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
     function getManagerIdentity() external view returns (address _managerIdentity) {
         ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
         return $.managerIdentity;
+    }
+
+    // Internal Functions & Overrides
+
+    /**
+     * @notice Sets the manager identity for the contract
+     * @dev Can only be called by the contract owner
+     */
+    function _setManagerIdentity(
+        address _managerIdentity
+    ) internal {
+        ArianeeLostStorageV0 storage $ = _getArianeeLostStorageV0();
+        $.managerIdentity = _managerIdentity;
+        emit NewManagerIdentity(_managerIdentity);
     }
 
     function _contextSuffixLength()
