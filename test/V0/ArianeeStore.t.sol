@@ -333,7 +333,7 @@ contract ArianeeStoreTest is Test {
         vm.expectEmit();
         emit CreditSpended(CREDIT_TYPE_CERTIFICATE, 1);
         uint256 tokenId = 1;
-        arianeeStoreProxy.hydrateToken(tokenId, bytes32(0), "", address(0), uint256(0), false, nmpProvider, false);
+        arianeeStoreProxy.hydrateToken(tokenId, bytes32(0), "", address(0), uint256(0), false, nmpProvider);
 
         // Assert credit history logic has been updated
         assertEq(arianeeCreditHistoryProxy.balanceOf(issuer1, CREDIT_TYPE_CERTIFICATE), 0);
@@ -358,7 +358,7 @@ contract ArianeeStoreTest is Test {
         vm.expectEmit();
         emit CreditSpended(CREDIT_TYPE_CERTIFICATE, 1);
         uint256 tokenId = 1;
-        arianeeStoreProxy.hydrateToken(tokenId, bytes32(0), "", address(0), uint256(0), false, nmpProvider, false);
+        arianeeStoreProxy.hydrateToken(tokenId, bytes32(0), "", address(0), uint256(0), false, nmpProvider);
 
         // Assert rewards have been distributed
         assertTrue(aria.balanceOf(nmpProvider) > 0);

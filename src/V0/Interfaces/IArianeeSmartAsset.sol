@@ -9,7 +9,7 @@ interface IArianeeSmartAsset {
         bytes32 _hash,
         uint256 _accessType,
         bytes memory _signature
-    ) external view returns (bool); // TODO: Breaking change, before it was `isTokenValid`, we'll probably need to change this in the SDK (we'll see if it's used)
+    ) external view returns (bool);
 
     function issuerOf(
         uint256 _tokenId
@@ -37,7 +37,7 @@ interface IArianeeSmartAsset {
         uint256 _tokenRecoveryTimestamp,
         bool _initialKeyIsRequestKey,
         address _issuer,
-        bool _soulbound // TODO: Breaking change, it's a new param, we'll probably need to change this in the SDK (we'll see if it's used)
+        bool _soulbound // INFO: Breaking change, it's a new param, we'll probably need to change this in the SDK (we'll see if it's used)
     ) external;
 
     function requestToken(
