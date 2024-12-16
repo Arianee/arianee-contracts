@@ -11,7 +11,8 @@
     "verify": "bash ./verify-from-run-file.sh",
     "prover": "node ./ffi/prover.mjs",
     "test": "forge test --force --match-path \"./test/**/*.t.sol\"",
-    "test:prover": "bash ./run-test-with-prover.sh"
+    "test:prover": "bash ./run-test-with-prover.sh",
+    "gen:abi": "bash ./write-abi-files.sh"
   },
   "repository": {
     "type": "git",
