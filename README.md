@@ -131,7 +131,7 @@ To generate contracts ABIs run the following command:
 
 ```shell
 # npm run gen:abi <path_to_contracts>
-$ npm run gen:abi src/V0/Interfaces
+$ npm run gen:abi src/V0
 ```
 
 It will generate ABIs for contracts matching `<path_to_contracts>` under the `abi` directory.
