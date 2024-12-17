@@ -1,0 +1,1853 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_trustedForwarder",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "ArianeeIssuerProxyStorageV0Location",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "DEFAULT_ADMIN_ROLE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "acceptEvent",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_eventId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addCreditFreeSender",
+    "inputs": [
+      {
+        "name": "_sender",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addCreditFreeSenderBatch",
+    "inputs": [
+      {
+        "name": "_senders",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addCreditNotePool",
+    "inputs": [
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addTokenAccess",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_key",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_enable",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "_tokenType",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "approve",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_approved",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "commitmentHashes",
+    "inputs": [
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "createEvent",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNoteProof",
+        "type": "tuple",
+        "internalType": "struct CreditNoteProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[4]",
+            "internalType": "uint256[4]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_eventId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_imprint",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "_uri",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "createMessage",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNoteProof",
+        "type": "tuple",
+        "internalType": "struct CreditNoteProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[4]",
+            "internalType": "uint256[4]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_messageId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_imprint",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "destroy",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "destroyEvent",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_eventId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getRoleAdmin",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getStoreAddress",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "grantRole",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "hasRole",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "hydrateToken",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNoteProof",
+        "type": "tuple",
+        "internalType": "struct CreditNoteProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[4]",
+            "internalType": "uint256[4]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_imprint",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "_uri",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "_encryptedInitialKey",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenRecoveryTimestamp",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_initialKeyIsRequestKey",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "inputs": [
+      {
+        "name": "_initialAdmin",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_storeAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_smartAssetAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_eventAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_lostAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_verifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_poseidon",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "invalidateUnorderedNonces",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_wordPos",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_mask",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "isTrustedForwarder",
+    "inputs": [
+      {
+        "name": "forwarder",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "recoverTokenToIssuer",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "refuseEvent",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_eventId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeCreditFreeSender",
+    "inputs": [
+      {
+        "name": "_sender",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeCreditFreeSenderBatch",
+    "inputs": [
+      {
+        "name": "_senders",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "renounceRole",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "callerConfirmation",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "reserveToken",
+    "inputs": [
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "revokeRole",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "safeTransferFrom",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_data",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setMissingStatus",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setStolenStatus",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "supportsInterface",
+    "inputs": [
+      {
+        "name": "interfaceId",
+        "type": "bytes4",
+        "internalType": "bytes4"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "transferFrom",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_from",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "trustedForwarder",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "unsetMissingStatus",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "unsetStolenStatus",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateCommitment",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_newCommitmentHash",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateCommitmentBatch",
+    "inputs": [
+      {
+        "name": "_ownershipProofs",
+        "type": "tuple[]",
+        "internalType": "struct OwnershipProof[]",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenIds",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      },
+      {
+        "name": "_newCommitmentHashes",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateDestroyEventRequest",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_eventId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_active",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateRecoveryRequest",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_active",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateSmartAsset",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNoteProof",
+        "type": "tuple",
+        "internalType": "struct CreditNoteProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[4]",
+            "internalType": "uint256[4]"
+          }
+        ]
+      },
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_imprint",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "_interfaceProvider",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "updateTokenURI",
+    "inputs": [
+      {
+        "name": "_ownershipProof",
+        "type": "tuple",
+        "internalType": "struct OwnershipProof",
+        "components": [
+          {
+            "name": "_pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "_pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "_pubSignals",
+            "type": "uint256[3]",
+            "internalType": "uint256[3]"
+          }
+        ]
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_uri",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "CreditFreeSenderAdded",
+    "inputs": [
+      {
+        "name": "_sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CreditFreeSenderLog",
+    "inputs": [
+      {
+        "name": "_sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "_creditType",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CreditFreeSenderRemoved",
+    "inputs": [
+      {
+        "name": "_sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CreditNotePoolAdded",
+    "inputs": [
+      {
+        "name": "_creditNotePool",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Initialized",
+    "inputs": [
+      {
+        "name": "version",
+        "type": "uint64",
+        "indexed": false,
+        "internalType": "uint64"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RoleAdminChanged",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "previousAdminRole",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "newAdminRole",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RoleGranted",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RoleRevoked",
+    "inputs": [
+      {
+        "name": "role",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "sender",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TokenCommitmentRegistered",
+    "inputs": [
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TokenCommitmentUnregistered",
+    "inputs": [
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TokenCommitmentUpdated",
+    "inputs": [
+      {
+        "name": "_previousCommitmentHash",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_newCommitmentHash",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UnorderedNonceInvalidation",
+    "inputs": [
+      {
+        "name": "_commitmentHash",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_word",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "_mask",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AccessControlBadConfirmation",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "AccessControlUnauthorizedAccount",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "neededRole",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  }
+]

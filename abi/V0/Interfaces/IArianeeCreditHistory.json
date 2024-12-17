@@ -1,0 +1,59 @@
+[
+  {
+    "type": "function",
+    "name": "addCreditHistory",
+    "inputs": [
+      {
+        "name": "_spender",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_price",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_quantity",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_type",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "consumeCredits",
+    "inputs": [
+      {
+        "name": "_spender",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_type",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_quantity",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  }
+]

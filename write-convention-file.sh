@@ -81,7 +81,7 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
-output_dir="conventions"
+output_dir="convention"
 output_file="${output_dir}/${chainId}.json"
 
 mkdir -p "$output_dir" || fail

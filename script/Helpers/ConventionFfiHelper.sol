@@ -31,7 +31,7 @@ struct Convention {
 
 /**
  * @title ConventionFfiHelper
- * @notice Helper contract to interact with the conventions scripts
+ * @notice Helper contract to interact with the convention script
  */
 abstract contract ConventionFfiHelper is Script {
     function writeConventionFile(
