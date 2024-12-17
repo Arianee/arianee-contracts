@@ -2,9 +2,6 @@
 pragma solidity 0.8.28;
 
 interface IArianeeStore {
-    // TODO: Breaking change, `canTransfer(address _from, address _to, uint256 _tokenId, bool _isSoulbound) external returns (bool)` has been deleted
-    // TODO: Breaking change, `canDestroy(uint256 _tokenId, address _sender, bool _isSoulbound) external returns (bool)` has been deleted
-
     function buyCredit(uint256 _creditType, uint256 _quantity, address _to) external;
 
     function reserveToken(uint256 _tokenId, address _to) external;
@@ -15,8 +12,7 @@ interface IArianeeStore {
         address _initialKey,
         uint256 _tokenRecoveryTimestamp,
         bool _initialKeyIsRequestKey,
-        address _rewardsReceiver,
-        bool _soulbound // TODO: Breaking change, it's a new param, we'll probably need to change this in the SDK
+        address _rewardsReceiver
     ) external;
 
     function createEvent(

@@ -1,0 +1,28 @@
+{
+  "contractAdresses": {
+    "aria": "0x757494946FD1A932aFDD3b04D791DA2a8071b4ad",
+    "identity": "0xEd8EB3463143b0d49119A93d2E2f23e0aF20851d",
+    "smartAsset": "0x5DD0E406D5198bad00C3833386a46ED37537d3f0",
+    "updateSmartAssets": "0x9462544A43c79985F493a723BFD1cd5292746E9D",
+    "eventArianee": "0xBFca4534E706B070383f1C6030Fe935b6329dcB0",
+    "message": "0xbfE495720F3E58203312DfF9c6ecE186EF058AE3",
+    "whitelist": "0x1571ceD28292AB5db75621d73b01A0509A9e7dc0",
+    "lost": "0x8BC7A969d51E215801F58a9989A3e27767d4040D",
+    "creditHistory": "0xB374ca24a141ffd29294804ec7A79a6C0FeE0a43",
+    "rewardsHistory": "0x664a7F51010920Fb9048d14b836914d011AaBD31",
+    "store": "0x4e3f6D606305c3E057D1B11a347C75A915ab17D1",
+    "staking": "0x0000000000000000000000000000000000000000",
+    "userAction": "0x0000000000000000000000000000000000000000",
+    "hasher": "0x0000000000000000000000000000000000000000",
+    "creditRegister": "0x0000000000000000000000000000000000000000",
+    "creditVerifier": "0x0000000000000000000000000000000000000000",
+    "creditNotePool": "0x0000000000000000000000000000000000000000",
+    "poseidon": "0x05FA25317624AD2A3DD39FE86cF537A5C408F2e5",
+    "ownershipVerifier": "0x552Ed4552fBFA5b8Ee60289C47624aA047462086",
+    "issuerProxy": "0x7817f53ee27225a6Bc7CC00fB0f515A879648131"
+  },
+  "httpProvider": "https://etherlink-testnet-fakeprevrandao.arianee.workers.dev",
+  "gasStation": "https://gasstation.arianee.com/128123",
+  "chainId": 128123,
+  "protocolVersion": "1.6"
+}

@@ -6,6 +6,7 @@ solc = "0.8.28"
 via_ir = true
 ffi = true
 ast = true
+memory_limit = 268435456
 build_info = true
 extra_output = ["storageLayout"]
 remappings = [

@@ -311,8 +311,7 @@ contract ArianeeIssuerProxy is
             _encryptedInitialKey,
             _tokenRecoveryTimestamp,
             _initialKeyIsRequestKey,
-            _interfaceProvider,
-            false // INFO: For now, we don't allow to create a soulbound SmartAsset
+            _interfaceProvider
         );
     }
 

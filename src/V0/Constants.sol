@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 // Roles
 bytes32 constant ROLE_ADMIN = 0x00; // Same as `DEFAULT_ADMIN_ROLE` in `AccessControlUpgradeable`
-bytes32 constant ROLE_ARIANEE_STORE = keccak256("ROLE_ARIANEE_STORE");
+bytes32 constant ROLE_ARIANEE_STORE = keccak256("ROLE_ARIANEE_STORE"); // 0x7c58c52c6ee36b58d66053b60f9071543575bb40c49fb6188a64738ae98ca57b
 
 // ArianeeSmartAsset
 string constant ERC721_NAME = "Arianee";

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # We init the Prover here so its shared between all tests, note that all tests using this Prover must use the same context as defined here (in the `initArgs` variable)
 # You can also directly init the Prover from a test `setUp()` with `proverFfi("init", vm.toString(abi.encode(...)));

@@ -218,8 +218,7 @@ contract ArianeeStore is
         address _initialKey,
         uint256 _tokenRecoveryTimestamp,
         bool _initialKeyIsRequestKey,
-        address _rewardsReceiver,
-        bool _soulbound
+        address _rewardsReceiver
     ) external whenNotPaused {
         ArianeeStoreStorageV0 storage $ = _getArianeeStoreStorageV0();
 
@@ -239,14 +238,7 @@ contract ArianeeStore is
         $.rewardsHistory.setTokenReward(_tokenId, _rewards);
 
         $.smartAsset.hydrateToken(
-            _tokenId,
-            _imprint,
-            _uri,
-            _initialKey,
-            _tokenRecoveryTimestamp,
-            _initialKeyIsRequestKey,
-            _msgSender(),
-            _soulbound
+            _tokenId, _imprint, _uri, _initialKey, _tokenRecoveryTimestamp, _initialKeyIsRequestKey, _msgSender(), false
         );
         $.rewardsHistory.setTokenNmpProvider(_tokenId, _rewardsReceiver);
     }

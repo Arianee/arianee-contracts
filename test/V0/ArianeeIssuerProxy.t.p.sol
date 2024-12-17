@@ -24,10 +24,10 @@ import {
     CREDIT_TYPE_UPDATE
 } from "@arianee/V0/Constants.sol";
 import { ByteUtils } from "@arianee/ByteUtils.sol";
-import { DeployBytecodeHelper } from "../Helpers/DeployBytecodeHelper.sol";
-import { ProverFfiHelper } from "../Helpers/ProverFfiHelper.sol";
+import { DeployBytecodeHelper } from "../../script/Helpers/DeployBytecodeHelper.sol";
+import { ProverFfiHelper } from "../../script/Helpers/ProverFfiHelper.sol";
 import { ProverTestContext } from "../ProverTestContext.sol";
-import { POSEIDON_BYTECODE } from "../Constants.sol";
+import { POSEIDON_BYTECODE } from "../../script/Constants.sol";
 
 /**
  * @dev WARNING: Don't use fuzzy tests in this test file
