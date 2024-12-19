@@ -47,7 +47,7 @@ contract ArianeeSmartAssetTest is Test {
     address arianeeSmartAssetImplAddr;
     ArianeeSmartAsset arianeeSmartAssetProxy;
 
-    function setUp() public {
+    function setUp() public virtual {
         Options memory opts;
         opts.constructorData = abi.encode(forwarder);
 
@@ -64,7 +64,7 @@ contract ArianeeSmartAssetTest is Test {
         vm.mockCall(whitelist, abi.encodeWithSelector(IArianeeWhitelist.addWhitelistedAddress.selector), abi.encode());
     }
 
-    function test_a_displayAddresses() public view {
+    function test_a_displayAddresses() public view virtual {
         // Dummy test to display addresses for debugging purposes
         console.log("Default: %s", msg.sender);
         console.log("ProxyAdmin: %s", proxyAdmin);
