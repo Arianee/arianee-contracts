@@ -20,7 +20,7 @@ import {
   zeroPadValue,
   hashMessage,
 } from "ethers";
-import { stdoutWriteExit as _stdoutWriteExit } from "./helpers/stdout";
+import { stdoutWrite as _stdoutWrite } from "./helpers/stdout";
 import { decodeArgs } from "./helpers/abi";
 
 // Utilities
@@ -30,7 +30,8 @@ const stdoutWriteExit = (
   exitCode = 0
 ) => {
   const { stdoutWrite } = program.opts();
-  if (stdoutWrite) _stdoutWriteExit(types, values, exitCode);
+  if (stdoutWrite) _stdoutWrite(types, values);
+  process.exit(exitCode);
 };
 const shutdown = () => {
   if (IPC.server) IPC.server.stop();

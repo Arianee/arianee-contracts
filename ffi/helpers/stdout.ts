@@ -1,11 +1,9 @@
 import { AbiCoder } from "ethers";
 import { ParamType } from "ethers";
 
-export const stdoutWriteExit = (
+export const stdoutWrite = (
   types: ReadonlyArray<string | ParamType>,
-  values: ReadonlyArray<any>,
-  exitCode = 0
+  values: ReadonlyArray<any>
 ) => {
   process.stdout.write(AbiCoder.defaultAbiCoder().encode(types, values));
-  process.exit(exitCode);
 };
