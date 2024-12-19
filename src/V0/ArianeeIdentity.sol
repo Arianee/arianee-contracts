@@ -289,6 +289,18 @@ contract ArianeeIdentity is IArianeeIdentity, Initializable, ERC2771ContextUpgra
         emit SetAddress("validatorAddress", _newValidatorAddress);
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function bouncerAddress() public view returns (address) {
+        return _getArianeeIdentityStorageV0().bouncerAddress;
+    }
+
+    function validatorAddress() public view returns (address) {
+        return _getArianeeIdentityStorageV0().validatorAddress;
+    }
+
+    // Internal Functions & Overrides
+
     /**
      * @dev Convert a bytes in bytes3
      * @param _inBytes input bytes

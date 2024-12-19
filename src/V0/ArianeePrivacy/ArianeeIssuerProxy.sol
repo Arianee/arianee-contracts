@@ -524,12 +524,48 @@ contract ArianeeIssuerProxy is
         emit TokenCommitmentUpdated(previousCommitmentHash, _newCommitmentHash, _tokenId);
     }
 
-    // Getters
+    // Auto-generated getters migrated from the legacy version
 
     function commitmentHashes(
         uint256 _tokenId
     ) external view returns (uint256) {
         return _getArianeeIssuerProxyStorageV0().commitmentHashes[_tokenId];
+    }
+
+    function creditFreeSenders(
+        address _sender
+    ) external view returns (bool) {
+        return _getArianeeIssuerProxyStorageV0().creditFreeSenders[_sender];
+    }
+
+    function creditNotePools(
+        address _creditNotePool
+    ) external view returns (bool) {
+        return _getArianeeIssuerProxyStorageV0().creditNotePools[_creditNotePool];
+    }
+
+    function poseidon() external view returns (IPoseidon) {
+        return _getArianeeIssuerProxyStorageV0().poseidon;
+    }
+
+    function verifier() external view returns (IOwnershipVerifier) {
+        return _getArianeeIssuerProxyStorageV0().verifier;
+    }
+
+    function smartAsset() external view returns (IArianeeSmartAsset) {
+        return _getArianeeIssuerProxyStorageV0().smartAsset;
+    }
+
+    function store() external view returns (IArianeeStore) {
+        return _getArianeeIssuerProxyStorageV0().store;
+    }
+
+    function arianeeEvent() external view returns (IArianeeEvent) {
+        return _getArianeeIssuerProxyStorageV0().arianeeEvent;
+    }
+
+    function arianeeLost() external view returns (IArianeeLost) {
+        return _getArianeeIssuerProxyStorageV0().arianeeLost;
     }
 
     // Store management

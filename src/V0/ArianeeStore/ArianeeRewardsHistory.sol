@@ -117,6 +117,12 @@ contract ArianeeRewardsHistory is
         return _getArianeeRewardsHistoryStorageV0().tokenToWalletProvider[_tokenId];
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function storeAddress() public view returns (IArianeeStore) {
+        return _getArianeeRewardsHistoryStorageV0().store;
+    }
+
     // Overrides
 
     function _contextSuffixLength()

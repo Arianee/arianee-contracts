@@ -168,6 +168,12 @@ contract ArianeeCreditHistory is
         _totalCredits = _getArianeeCreditHistoryStorageV0().addrToTypeToTotalCredit[_spender][_type];
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function arianeeStoreAddress() external view returns (address) {
+        return address(_getArianeeCreditHistoryStorageV0().store);
+    }
+
     // Overrides
 
     function _contextSuffixLength()
