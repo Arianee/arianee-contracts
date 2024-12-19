@@ -528,6 +528,52 @@ contract ArianeeStore is
         return _getArianeeStoreStorageV0().creditPrices[_creditType];
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function acceptedToken() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().aria);
+    }
+
+    function ariaUSDExchange() external view returns (uint256) {
+        return _getArianeeStoreStorageV0().ariaUSDExchange;
+    }
+
+    function arianeeProjectAddress() external view returns (address) {
+        return _getArianeeStoreStorageV0().arianeeProjectAddress;
+    }
+
+    function protocolInfraAddress() external view returns (address) {
+        return _getArianeeStoreStorageV0().protocolInfraAddress;
+    }
+
+    function arianeeEvent() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().arianeeEvent);
+    }
+
+    function arianeeMessage() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().arianeeMessage);
+    }
+
+    function arianeeUpdate() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().smartAssetUpdate);
+    }
+
+    function authorizedExchangeAddress() external view returns (address) {
+        return _getArianeeStoreStorageV0().authorizedExchangeAddress;
+    }
+
+    function creditHistory() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().creditHistory);
+    }
+
+    function rewardsHistory() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().rewardsHistory);
+    }
+
+    function nonFungibleRegistry() external view returns (address) {
+        return address(_getArianeeStoreStorageV0().smartAsset);
+    }
+
     // Internal Functions & Overrides
 
     /**

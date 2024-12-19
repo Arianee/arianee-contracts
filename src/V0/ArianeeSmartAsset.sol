@@ -609,6 +609,16 @@ contract ArianeeSmartAsset is
         return super.supportsInterface(interfaceId);
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function arianeeWhitelist() external view returns (IArianeeWhitelist) {
+        return _getArianeeSmartAssetStorageV0().whitelist;
+    }
+
+    function store() external view returns (IArianeeStore) {
+        return _getArianeeSmartAssetStorageV0().store;
+    }
+
     // Internal Functions & Overrides
 
     /**

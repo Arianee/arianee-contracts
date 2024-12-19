@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 // Stateless
 import { IArianeeWhitelist } from "./Interfaces/IArianeeWhitelist.sol";
-import { ROLE_ADMIN } from "./Constants.sol";
+import { ROLE_ADMIN, ROLE_WHITELIST_MANAGER } from "./Constants.sol";
 
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -53,16 +53,20 @@ contract ArianeeWhitelist is IArianeeWhitelist, Initializable, ERC2771ContextUpg
     }
 
     function initialize(
-        address _initialAdmin
+        address _initialAdmin,
+        address _arianeeEventAddress,
+        address _smartAssetAddress
     ) public initializer {
         _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_WHITELIST_MANAGER, _arianeeEventAddress);
+        _grantRole(ROLE_WHITELIST_MANAGER, _smartAssetAddress);
     }
 
     /**
      * @notice Adds an address to the whitelist for a specific SmartAsset
      * @dev Can only be called by contract authorized
      */
-    function addWhitelistedAddress(uint256 _tokenId, address _address) external onlyRole(ROLE_ADMIN) {
+    function addWhitelistedAddress(uint256 _tokenId, address _address) external onlyRole(ROLE_WHITELIST_MANAGER) {
         ArianeeWhitelistStorageV0 storage $ = _getArianeeWhitelistStorageV0();
         $.whitelistedAddress[_tokenId][_address] = true;
         emit WhitelistedAddressAdded(_tokenId, _address);

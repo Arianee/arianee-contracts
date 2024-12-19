@@ -276,6 +276,12 @@ contract ArianeeLost is IArianeeLost, Initializable, ERC2771ContextUpgradeable, 
         return $.managerIdentity;
     }
 
+    // Auto-generated getters migrated from the legacy version
+
+    function smartAsset() public view returns (IArianeeSmartAsset) {
+        return _getArianeeLostStorageV0().smartAsset;
+    }
+
     // Internal Functions & Overrides
 
     /**

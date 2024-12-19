@@ -64,6 +64,12 @@ abstract contract UnorderedNonceUpgradeable is Initializable {
 
         return !(flipped & bit == 0);
     }
+
+    // Auto-generated getters migrated from the legacy version
+
+    function nonceBitmap(uint256 commitmentHash, uint256 wordPos) public view returns (uint256) {
+        return _getUnorderedNonceStorage().nonceBitmap[commitmentHash][wordPos];
+    }
 }
 
 event UnorderedNonceInvalidation(uint256 indexed _commitmentHash, uint256 _word, uint256 _mask);

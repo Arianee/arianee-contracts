@@ -83,6 +83,7 @@ contract ArianeeSmartAssetUpdate is
         __Pausable_init_unchained();
 
         _grantRole(ROLE_ADMIN, _initialAdmin);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
 
         ArianeeSmartAssetUpdateStorageV0 storage $ = _getArianeeSmartAssetUpdateStorageV0();
         $.smartAsset = IArianeeSmartAsset(_smartAssetAddress);
@@ -183,6 +184,12 @@ contract ArianeeSmartAssetUpdate is
         bool isUpdated = $.idToLastUpdate[_tokenId].imprint != 0;
         return
             (isUpdated, $.idToLastUpdate[_tokenId].imprint, originalImprint, $.idToLastUpdate[_tokenId].updateTimestamp);
+    }
+
+    // Auto-generated getters migrated from the legacy version
+
+    function storeAddress() public view returns (address) {
+        return address(_getArianeeSmartAssetUpdateStorageV0().store);
     }
 
     // Internal Overrides
