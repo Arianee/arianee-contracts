@@ -17,7 +17,7 @@ abstract contract ProverTestContext is Test {
 
     uint256 internal signerPk = uint256(keccak256(abi.encodePacked("proverFfiHelper_signerPk")));
 
-    string internal protocolVersion = "1.0";
+    string internal protocolVersion = "1.6";
     uint256 internal chainId = 1337;
 
     address internal aria = vm.addr(uint256(keccak256(abi.encodePacked("proverFfiHelper_aria"))));

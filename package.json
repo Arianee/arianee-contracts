@@ -9,7 +9,7 @@
   "scripts": {
     "script": "bash ./run-script-with-env.sh",
     "verify": "bash ./verify-from-run-file.sh",
-    "prover": "node ./ffi/prover.mjs",
+    "prover": "npx tsx ./ffi/prover.ts",
     "test": "forge test --force --match-path \"./test/**/*.t.sol\"",
     "test:prover": "bash ./run-test-with-prover.sh",
     "gen:abi": "bash ./write-abi-files.sh"
@@ -25,12 +25,15 @@
   },
   "homepage": "https://github.com/Arianee/arianee-contracts#readme",
   "devDependencies": {
-    "@arianee/arianee-protocol-client": "^1.86.0",
-    "@arianee/core": "^1.86.0",
-    "@arianee/privacy-circuits": "^1.86.0",
+    "@arianee/arianee-protocol-client": "1.88.0",
+    "@arianee/common-types": "1.88.0",
+    "@arianee/core": "1.88.0",
+    "@arianee/privacy-circuits": "1.88.0",
+    "@types/node-ipc": "9.2.3",
     "commander": "^12.1.0",
-    "ethers": "^6.13.4",
-    "node-ipc": "^12.0.0",
-    "tslog": "^4.9.3"
+    "ethers": "6.13.1",
+    "node-ipc": "12.0.0",
+    "tslog": "^4.9.3",
+    "tsx": "^4.19.2"
   }
 }

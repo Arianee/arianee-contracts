@@ -3,8 +3,8 @@ pragma solidity 0.8.28;
 
 import { Test, console } from "forge-std/Test.sol";
 import { OwnershipProof } from "@arianee/V0/ArianeePrivacy/ArianeeIssuerProxy.sol";
-import { ProverFfiHelper } from "../../script/Helpers/ProverFfiHelper.sol";
-import { ProverTestContext } from "../ProverTestContext.sol";
+import { ProverFfiHelper } from "../../../script/Helpers/ProverFfiHelper.sol";
+import { ProverTestContext } from "../../ProverTestContext.sol";
 
 contract ProverFfiHelperTest is Test, ProverFfiHelper, ProverTestContext {
     /**

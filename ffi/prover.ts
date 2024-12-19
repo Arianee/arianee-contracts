@@ -1,27 +1,37 @@
-import { createRequire } from "module";
+import { version } from "../package.json";
 import { Logger } from "tslog";
-import { Command } from "commander";
-import IPC from "node-ipc";
-import { Core } from "@arianee/core";
-import { Prover } from "@arianee/privacy-circuits";
-import { AbiCoder, Wallet, ZeroAddress, zeroPadValue } from "ethers";
 import { spawn } from "child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { Argument, Command } from "commander";
+import IPC from "node-ipc";
+import {
+  GasStation,
+  ProtocolDetailsV1,
+  ProtocolV1Versions,
+} from "@arianee/common-types";
+import { Core } from "@arianee/core";
 import { ProtocolClientV1 } from "@arianee/arianee-protocol-client";
-
-const require = createRequire(import.meta.url);
-const { version } = require("../package.json");
+import { Prover } from "@arianee/privacy-circuits";
+import {
+  Wallet,
+  ZeroAddress,
+  BytesLike,
+  ParamType,
+  zeroPadValue,
+  hashMessage,
+} from "ethers";
+import { stdoutWrite as _stdoutWrite } from "./helpers/stdout";
+import { decodeArgs } from "./helpers/abi";
 
 // Utilities
-const stdoutWriteExit = (types, values, exitCode = 0) => {
+const stdoutWriteExit = (
+  types: ReadonlyArray<string | ParamType>,
+  values: ReadonlyArray<any>,
+  exitCode = 0
+) => {
   const { stdoutWrite } = program.opts();
-  if (stdoutWrite) {
-    process.stdout.write(AbiCoder.defaultAbiCoder().encode(types, values));
-  }
+  if (stdoutWrite) _stdoutWrite(types, values);
   process.exit(exitCode);
-};
-const decodeArgs = (types, data) => {
-  return AbiCoder.defaultAbiCoder().decode(types, data);
 };
 const shutdown = () => {
   if (IPC.server) IPC.server.stop();
@@ -48,7 +58,7 @@ program
     "Prover from `@arianee/privacy-circuits` as a CLI to be used from Foundry Rust FFI"
   )
   .version(version)
-  .option("-ll, --log-level <level>", "logging level", 2)
+  .option("-ll, --log-level <level>", "logging level", "2")
   .option("-nsw, --no-stdout-write", "do not write command result to stdout")
   .on("option:log-level", (level) => {
     logger.settings.minLevel = level;
@@ -57,8 +67,8 @@ program
 program
   .command("exec")
   .description("Ask the prover server to execute a command")
-  .addArgument("<command>", "command to execute")
-  .addArgument("<args>", "abi encoded arguments")
+  .addArgument(new Argument("<command>", "command to execute"))
+  .addArgument(new Argument("<args>", "abi encoded arguments"))
   .action(async (command, args) => {
     IPC.connectTo(PROVER_IPC_SERVER_ID, () => {
       IPC.of.prover.on("connect", () => {
@@ -75,7 +85,7 @@ program
 program
   .command("init")
   .description("Spawn a prover server in a detached process")
-  .addArgument("<args>", "abi encoded arguments")
+  .addArgument(new Argument("<args>", "abi encoded arguments"))
   .action(async (args) => {
     if (!existsSync(PROVER_PID_FILE)) writeFileSync(PROVER_PID_FILE, "0");
 
@@ -92,7 +102,7 @@ program
     childProcess.stdout.on("data", (data) => {
       if (data.toString().includes("Server started")) {
         logger.info("Server started");
-        writeFileSync(PROVER_PID_FILE, childProcess.pid.toString());
+        writeFileSync(PROVER_PID_FILE, childProcess.pid!.toString());
         childProcess.unref();
         stdoutWriteExit(["bool"], [true]);
       }
@@ -106,7 +116,7 @@ program
 program
   .command("start")
   .description("Start the prover server")
-  .addArgument("<args>", "abi encoded arguments")
+  .addArgument(new Argument("<args>", "abi encoded arguments"))
   .action(async (programArgs) => {
     logger.debug(`PID: ${process.pid}`);
     const decodedProgramArgs = decodeArgs(
@@ -135,10 +145,10 @@ program
 
     const signerPk = decodedProgramArgs[0];
     const signerPkBytes = zeroPadValue(`0x${signerPk.toString(16)}`, 32);
-    const signer = new Wallet(signerPkBytes);
+    const wallet = new Wallet(signerPkBytes);
 
-    const protocolDetails = {
-      protocolVersion: String(decodedProgramArgs[1]),
+    const protocolDetails: ProtocolDetailsV1 = {
+      protocolVersion: String(decodedProgramArgs[1]) as ProtocolV1Versions,
       chainId: Number(decodedProgramArgs[2]),
       contractAdresses: {
         aria: String(decodedProgramArgs[3]),
@@ -155,13 +165,20 @@ program
         issuerProxy: String(decodedProgramArgs[13]),
         creditNotePool: ZeroAddress,
       },
+      httpProvider: "",
+      gasStation: "",
+      soulbound: false,
     };
 
-    const protocolV1 = new ProtocolClientV1(signer, protocolDetails);
+    const protocolV1 = new ProtocolClientV1(
+      wallet as any,
+      protocolDetails,
+      {} as unknown as GasStation
+    );
 
     logger.info("Initializing prover...");
     const prover = new Prover({
-      core: Core.fromWallet(signer),
+      core: Core.fromWallet(wallet),
       circuitsBuildPath: "node_modules/@arianee/privacy-circuits/build",
       useCreditNotePool: false,
     });
@@ -197,14 +214,17 @@ program
       return;
     }
 
+    let stopped = false;
     try {
       const pid = parseInt(readFileSync(PROVER_PID_FILE).toString());
       process.kill(-pid, "SIGTERM");
       logger.info("Server stopped");
+      stopped = true;
     } catch {
       logger.error("Server could not be stopped");
     } finally {
       rmSync(PROVER_PID_FILE);
+      stdoutWriteExit(["bool"], [stopped], stopped ? 0 : 1);
     }
   });
 
@@ -215,18 +235,28 @@ const handlers = {
   issuerProxy_computeCommitmentHash,
   issuerProxy_computeIntentHash,
   issuerProxy_generateProof,
+  issuerProxy_computeCommitmentHashV2,
 };
 
-async function issuerProxy_computeCommitmentHash(prover, protocolV1, args) {
+async function issuerProxy_computeCommitmentHash(
+  prover: Prover,
+  protocolV1: ProtocolClientV1,
+  args: BytesLike
+) {
   const decodedArgs = decodeArgs(["uint256"], args);
   const { commitmentHashAsHex } =
     await prover.issuerProxy.computeCommitmentHash({
       protocolV1,
-      tokenId: parseInt(decodedArgs[0]),
+      tokenId: decodedArgs[0],
     });
   return { types: ["uint256"], values: [commitmentHashAsHex] };
 }
-async function issuerProxy_computeIntentHash(prover, protocolV1, args) {
+
+async function issuerProxy_computeIntentHash(
+  prover: Prover,
+  protocolV1: ProtocolClientV1,
+  args: BytesLike
+) {
   const decodedArgs = decodeArgs(["string", "string[]", "bytes", "bool"], args);
   const { intentHashAsStr } = await prover.issuerProxy.computeIntentHash({
     protocolV1,
@@ -237,7 +267,11 @@ async function issuerProxy_computeIntentHash(prover, protocolV1, args) {
   return { types: ["string"], values: [intentHashAsStr] };
 }
 
-async function issuerProxy_generateProof(prover, protocolV1, args) {
+async function issuerProxy_generateProof(
+  prover: Prover,
+  protocolV1: ProtocolClientV1,
+  args: BytesLike
+) {
   const decodedArgs = decodeArgs(["uint256", "string"], args);
   const { callData } = await prover.issuerProxy.generateProof({
     protocolV1,
@@ -248,4 +282,32 @@ async function issuerProxy_generateProof(prover, protocolV1, args) {
     types: ["tuple(uint256[2], uint256[2][2], uint256[2], uint256[3])"],
     values: [callData],
   };
+}
+
+// CommitmentHashV2
+
+async function issuerProxy_computeCommitmentHashV2(
+  prover: Prover,
+  protocolV1: ProtocolClientV1,
+  args: BytesLike
+) {
+  const decodedArgs = decodeArgs(["uint256"], args);
+  const tokenId = decodedArgs[0];
+
+  // INFO: This is a dummy implementation, we're waiting for DFNS to release the new APIs
+  const chainId = protocolV1.protocolDetails.chainId;
+  const smartAssetContractAddress =
+    await protocolV1.smartAssetContract.getAddress();
+  const message = `${chainId}.${smartAssetContractAddress}.${tokenId}.v2`; // We add `v2` to generate a different hash
+  const digest = hashMessage(message);
+
+  const { signature } = await prover.core.signDigest!(digest);
+  const { r, s, v } = signature;
+
+  // We use the internal method of the `Prover` class to compute the commitment hash, prevent re-write everything here
+  const { commitmentHashAsHex } = (
+    prover.issuerProxy as any
+  )._computeCommitmentHash({ r, s, v });
+
+  return { types: ["uint256"], values: [commitmentHashAsHex] };
 }

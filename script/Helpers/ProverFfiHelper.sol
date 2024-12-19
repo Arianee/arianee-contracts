@@ -76,4 +76,10 @@ abstract contract ProverFfiHelper is Script {
         bool success = abi.decode(res, (bool));
         vm.assertTrue(success, "Prover init failed"); // Doesn't matter if only the first assert is successful
     }
+
+    function stopProver() internal {
+        bytes memory res = proverFfi("stop", "");
+        bool success = abi.decode(res, (bool));
+        vm.assertTrue(success, "Prover stop failed");
+    }
 }
