@@ -144,11 +144,11 @@ contract DeployBaseScript is Script, ConventionFfiHelper {
 
         vm.startBroadcast(deployerPk);
 
-        // Pre-compute ArianeeStore address
+        // Pre-compute ArianeeStore and ArianeeWhitelist addresses
         // Each `deployTransparentProxy` call will increment the nonce by 2
         // The implementation contract is deployed before the proxy contract
-        uint256 targetNonce = startNonce + 19;
-        address arianeeStorePreComputedAddr = vm.computeCreateAddress(deployerAddr, targetNonce);
+        address arianeeWhitelistPreComputedAddr = vm.computeCreateAddress(deployerAddr, startNonce + 11);
+        address arianeeStorePreComputedAddr = vm.computeCreateAddress(deployerAddr, startNonce + 19);
 
         // ArianeeIdentity
         address arianeeIdentityProxyAddr = Upgrades.deployTransparentProxy(
@@ -159,17 +159,13 @@ contract DeployBaseScript is Script, ConventionFfiHelper {
         );
         identity = ArianeeIdentity(arianeeIdentityProxyAddr);
 
-        // ArianeeWhitelist
-        address arianeeWhitelistProxyAddr = Upgrades.deployTransparentProxy(
-            "ArianeeWhitelist.sol", proxyAdmin, abi.encodeCall(ArianeeWhitelist.initialize, (admin)), opts
-        );
-        whitelist = ArianeeWhitelist(arianeeWhitelistProxyAddr);
-
         // ArianeeSmartAsset
         address arianeeSmartAssetProxyAddr = Upgrades.deployTransparentProxy(
             "ArianeeSmartAsset.sol",
             proxyAdmin,
-            abi.encodeCall(ArianeeSmartAsset.initialize, (admin, arianeeStorePreComputedAddr, address(whitelist))),
+            abi.encodeCall(
+                ArianeeSmartAsset.initialize, (admin, arianeeStorePreComputedAddr, arianeeWhitelistPreComputedAddr)
+            ),
             opts
         );
         smartAsset = ArianeeSmartAsset(arianeeSmartAssetProxyAddr);
@@ -190,7 +186,8 @@ contract DeployBaseScript is Script, ConventionFfiHelper {
             "ArianeeEvent.sol",
             proxyAdmin,
             abi.encodeCall(
-                ArianeeEvent.initialize, (admin, address(smartAsset), arianeeStorePreComputedAddr, address(whitelist))
+                ArianeeEvent.initialize,
+                (admin, address(smartAsset), arianeeStorePreComputedAddr, arianeeWhitelistPreComputedAddr)
             ),
             opts
         );
@@ -201,11 +198,27 @@ contract DeployBaseScript is Script, ConventionFfiHelper {
             "ArianeeMessage.sol",
             proxyAdmin,
             abi.encodeCall(
-                ArianeeMessage.initialize, (admin, address(smartAsset), arianeeStorePreComputedAddr, address(whitelist))
+                ArianeeMessage.initialize,
+                (admin, address(smartAsset), arianeeStorePreComputedAddr, arianeeWhitelistPreComputedAddr)
             ),
             opts
         );
         arianeeMessage = ArianeeMessage(arianeeMessageProxyAddr);
+
+        // ArianeeWhitelist
+        address arianeeWhitelistProxyAddr = Upgrades.deployTransparentProxy(
+            "ArianeeWhitelist.sol",
+            proxyAdmin,
+            abi.encodeCall(ArianeeWhitelist.initialize, (admin, address(arianeeEvent), address(smartAsset))),
+            opts
+        );
+        whitelist = ArianeeWhitelist(arianeeWhitelistProxyAddr);
+        // Assert that the ArianeeWhitelist pre-computed address was correct
+        vm.assertEq(
+            arianeeWhitelistPreComputedAddr,
+            address(whitelist),
+            "Pre-computed ArianeeWhitelist address is not matching the actual address"
+        );
 
         // ArianeeLost
         address arianeeLostProxyAddr = Upgrades.deployTransparentProxy(

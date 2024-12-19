@@ -12,9 +12,10 @@ contract ArianeeWhitelistTest is Test {
     address admin = address(this); // Admin is likely the "Arianee Foundation"
 
     address forwarder = vm.addr(2);
+    address arianeeEvent = vm.addr(3);
+    address smartAsset = vm.addr(4);
 
-    address whitelistAdmin = vm.addr(3);
-    address unknown = vm.addr(6);
+    address unknown = vm.addr(5);
 
     ArianeeWhitelist arianeeWhitelistProxy;
     address arianeeWhitelistImplAddr;
@@ -24,7 +25,10 @@ contract ArianeeWhitelistTest is Test {
         opts.constructorData = abi.encode(forwarder);
 
         address arianeeWhitelistProxyAddr = Upgrades.deployTransparentProxy(
-            "ArianeeWhitelist.sol", proxyAdmin, abi.encodeCall(ArianeeWhitelist.initialize, (whitelistAdmin)), opts
+            "ArianeeWhitelist.sol",
+            proxyAdmin,
+            abi.encodeCall(ArianeeWhitelist.initialize, (admin, arianeeEvent, smartAsset)),
+            opts
         );
 
         arianeeWhitelistProxy = ArianeeWhitelist(arianeeWhitelistProxyAddr);
@@ -37,8 +41,9 @@ contract ArianeeWhitelistTest is Test {
         console.log("ProxyAdmin: %s", proxyAdmin);
         console.log("Admin: %s", admin);
         console.log("Forwarder: %s", forwarder);
+        console.log("ArianeeEvent: %s", arianeeEvent);
+        console.log("SmartAsset: %s", smartAsset);
         console.log("Unknown: %s", unknown);
-        console.log("WhitelistAdmin: %s", whitelistAdmin);
         // Contracts
         console.log("ArianeeWhitelistProxy: %s", address(arianeeWhitelistProxy));
         console.log("ArianeeWhitelistImpl: %s", arianeeWhitelistImplAddr);
@@ -54,9 +59,10 @@ contract ArianeeWhitelistTest is Test {
         vm.assume(addr != admin); // Make sure `addr` is not the admin address
 
         vm.assume(addr != forwarder); // Make sure `addr` is not the forwarder address
+        vm.assume(addr != arianeeEvent); // Make sure `addr` is not the arianeeEvent address
+        vm.assume(addr != smartAsset); // Make sure `addr` is not the smartAsset address
 
         vm.assume(addr != unknown); // Make sure `addr` is not the unknown address
-        vm.assume(addr != whitelistAdmin); // Make sure `addr` is not the whitelistAdmin address
 
         vm.assume(addr != address(arianeeWhitelistProxy)); // Make sure `addr` is not the ArianeeWhitelist proxy address
         vm.assume(addr != arianeeWhitelistImplAddr); // Make sure `addr` is not the ArianeeWhitelist implementation address
@@ -65,19 +71,19 @@ contract ArianeeWhitelistTest is Test {
 
     function test_initialize() public {
         // Check if the initial admin has the ROLE_ADMIN role
-        bool isAdmin = arianeeWhitelistProxy.hasRole(ROLE_ADMIN, whitelistAdmin);
+        bool isAdmin = arianeeWhitelistProxy.hasRole(ROLE_ADMIN, admin);
         assertTrue(isAdmin, "Initial admin does not have ROLE_ADMIN role");
 
         // Attempt to reinitialize and expect failure
         vm.expectRevert();
-        arianeeWhitelistProxy.initialize(unknown);
+        arianeeWhitelistProxy.initialize(admin, arianeeEvent, smartAsset);
     }
 
     function test_addWhitelistedAddress(
         uint256 _tokenId,
         address _address
     ) public assumeIsNotKnownOrZeroAddress(_address) {
-        vm.startPrank(whitelistAdmin);
+        vm.startPrank(arianeeEvent);
 
         vm.expectEmit();
         emit WhitelistedAddressAdded(_tokenId, _address);
@@ -115,7 +121,7 @@ contract ArianeeWhitelistTest is Test {
     }
 
     function test_isAuthorized(uint256 _tokenId, address _sender) public assumeIsNotKnownOrZeroAddress(_sender) {
-        vm.startPrank(whitelistAdmin);
+        vm.startPrank(smartAsset);
 
         vm.expectEmit();
         emit WhitelistedAddressAdded(_tokenId, _sender);

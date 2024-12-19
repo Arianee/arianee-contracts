@@ -148,16 +148,6 @@ contract ArianeeMessage is IArianeeMessage, Initializable, ERC2771ContextUpgrade
     // Getters
 
     /**
-     * @notice Returns the message data of a given message ID
-     * @param _messageId Message ID
-     */
-    function messages(
-        uint256 _messageId
-    ) public view returns (Message memory) {
-        return _getArianeeMessageStorageV0().messages[_messageId];
-    }
-
-    /**
      * @notice Returns the received messages length of a given receiver
      * @param _receiver Receiver address
      */
@@ -165,6 +155,18 @@ contract ArianeeMessage is IArianeeMessage, Initializable, ERC2771ContextUpgrade
         address _receiver
     ) public view returns (uint256) {
         return _getArianeeMessageStorageV0().receiverToMessageIds[_receiver].length;
+    }
+
+    // Auto-generated getters migrated from the legacy version
+
+    function messages(
+        uint256 _messageId
+    ) public view returns (Message memory) {
+        return _getArianeeMessageStorageV0().messages[_messageId];
+    }
+
+    function receiverToMessageIds(address _receiver, uint256 _index) public view returns (uint256) {
+        return _getArianeeMessageStorageV0().receiverToMessageIds[_receiver][_index];
     }
 
     // Overrides

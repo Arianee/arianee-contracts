@@ -234,11 +234,11 @@ contract ArianeeEvent is
         $.eventIdToEventListIndex[_eventId] = length - 1;
 
         $.whitelist.addWhitelistedAddress(tokenId, $.eventIdToEvent[_eventId].provider);
-        uint256 rewards = $.eventIdToRewards[_eventId];
+        uint256 eventRewards = $.eventIdToRewards[_eventId];
         delete $.eventIdToRewards[_eventId];
 
         emit EventAccepted(_eventId, _sender);
-        return rewards;
+        return eventRewards;
     }
 
     /**
@@ -255,11 +255,11 @@ contract ArianeeEvent is
         _destroyPending(_eventId);
 
         ArianeeEventStorageV0 storage $ = _getArianeeEventStorageV0();
-        uint256 rewards = $.eventIdToRewards[_eventId];
+        uint256 eventRewards = $.eventIdToRewards[_eventId];
         delete $.eventIdToRewards[_eventId];
         emit EventRefused(_eventId, _sender);
 
-        return rewards;
+        return eventRewards;
     }
 
     /**
@@ -384,6 +384,34 @@ contract ArianeeEvent is
             uint256 eventListIndex = $.eventIdToPendingEventListIndex[_eventId];
             return $.tokenIdToPendingEventList[tokenId][eventListIndex] == _eventId;
         }
+    }
+
+    // Auto-generated getters migrated from the legacy version
+
+    function idToPendingEvents(
+        uint256 _tokenId
+    ) public view returns (uint256) {
+        return _getArianeeEventStorageV0().eventIdToPendingEventListIndex[_tokenId];
+    }
+
+    function idToTokenEventIndex(
+        uint256 _eventId
+    ) public view returns (uint256) {
+        return _getArianeeEventStorageV0().eventIdToEventListIndex[_eventId];
+    }
+
+    function pendingEvents(uint256 _tokenId, uint256 _index) public view returns (uint256) {
+        return _getArianeeEventStorageV0().tokenIdToPendingEventList[_tokenId][_index];
+    }
+
+    function tokenEventsList(uint256 _tokenId, uint256 _index) public view returns (uint256) {
+        return _getArianeeEventStorageV0().tokenIdToEventList[_tokenId][_index];
+    }
+
+    function rewards(
+        uint256 _eventId
+    ) public view returns (uint256) {
+        return _getArianeeEventStorageV0().eventIdToRewards[_eventId];
     }
 
     // Internal Functions & Overrides
