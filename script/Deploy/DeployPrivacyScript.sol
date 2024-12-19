@@ -5,9 +5,9 @@ import { Script, console } from "forge-std/Script.sol";
 import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
 
-import { ConventionFfiHelper, Convention } from "./Helpers/ConventionFfiHelper.sol";
-import { DeployBytecodeHelper } from "./Helpers/DeployBytecodeHelper.sol";
-import { POSEIDON_BYTECODE } from "./Constants.sol";
+import { ConventionFfiHelper, Convention } from "../Helpers/ConventionFfiHelper.sol";
+import { DeployBytecodeHelper } from "../Helpers/DeployBytecodeHelper.sol";
+import { POSEIDON_BYTECODE } from "../Constants.sol";
 
 import { OwnershipVerifier } from "@arianee/V0/ArianeePrivacy/Verifiers/OwnershipVerifier.sol";
 import { IPoseidon } from "@arianee/V0/Interfaces/IPoseidon.sol";
@@ -65,6 +65,7 @@ contract DeployPrivacyScript is Script, ConventionFfiHelper, DeployBytecodeHelpe
 
         forwarder = vm.envAddress("ARIANEE_FORWARDER");
         console.log("Forwarder: %s", forwarder);
+        console.log("\r");
     }
 
     function run() public {

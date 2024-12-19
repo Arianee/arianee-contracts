@@ -5,12 +5,6 @@ import { Script, console } from "forge-std/Script.sol";
 import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
 
-import { ConventionFfiHelper, Convention } from "./Helpers/ConventionFfiHelper.sol";
-import { DeployBytecodeHelper } from "./Helpers/DeployBytecodeHelper.sol";
-import { POSEIDON_BYTECODE } from "./Constants.sol";
-
-import { OwnershipVerifier } from "@arianee/V0/ArianeePrivacy/Verifiers/OwnershipVerifier.sol";
-import { IPoseidon } from "@arianee/V0/Interfaces/IPoseidon.sol";
 import { ArianeeIssuerProxy } from "@arianee/V0/ArianeePrivacy/ArianeeIssuerProxy.sol";
 
 contract AddCreditFreeSenderScript is Script {
@@ -47,13 +41,14 @@ contract AddCreditFreeSenderScript is Script {
         for (uint256 i = 0; i < creditFreeSenders.length; i++) {
             console.log("CreditFreeSender(%d): %s", i, creditFreeSenders[i]);
         }
+        console.log("\r");
     }
 
     function run() public {
-        vm.startBroadcast(adminPk);
-
         // Attaching to the existing ArianeeIssuerProxy contract
         issuerProxy = ArianeeIssuerProxy(issuerProxyAddr);
+
+        vm.startBroadcast(adminPk);
 
         // Adding credit free senders
         issuerProxy.addCreditFreeSenderBatch(creditFreeSenders); // TODO: If needed, split the array into smaller chunks

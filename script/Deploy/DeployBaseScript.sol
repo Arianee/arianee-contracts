@@ -5,7 +5,7 @@ import { Script, console } from "forge-std/Script.sol";
 import { Upgrades } from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import { Options } from "@openzeppelin/foundry-upgrades/Options.sol";
 
-import { ConventionFfiHelper, Convention } from "./Helpers/ConventionFfiHelper.sol";
+import { ConventionFfiHelper, Convention } from "../Helpers/ConventionFfiHelper.sol";
 
 import { ArianeeIdentity } from "@arianee/V0/ArianeeIdentity.sol";
 import { ArianeeWhitelist } from "@arianee/V0/ArianeeWhitelist.sol";
@@ -132,7 +132,7 @@ contract DeployBaseScript is Script, ConventionFfiHelper {
         console.log("Store.DispatchPercent2: %d", storeDispatchPercent2);
         console.log("Store.DispatchPercent3: %d", storeDispatchPercent3);
         console.log("Store.DispatchPercent4: %d", storeDispatchPercent4);
-        console.log("\n");
+        console.log("\r");
     }
 
     function run() public {

@@ -524,21 +524,6 @@ contract ArianeeIssuerProxy is
         emit TokenCommitmentUpdated(previousCommitmentHash, _newCommitmentHash, _tokenId);
     }
 
-    function updateCommitmentBatch(
-        OwnershipProof[] calldata _ownershipProofs,
-        uint256[] calldata _tokenIds,
-        uint256[] calldata _newCommitmentHashes
-    ) external onlyRole(ROLE_ADMIN) {
-        require(
-            _ownershipProofs.length == _tokenIds.length && _tokenIds.length == _newCommitmentHashes.length,
-            "ArianeeIssuerProxy: Arrays length mismatch"
-        );
-
-        for (uint256 i = 0; i < _tokenIds.length; i++) {
-            updateCommitment(_ownershipProofs[i], _tokenIds[i], _newCommitmentHashes[i]);
-        }
-    }
-
     // Getters
 
     function commitmentHashes(

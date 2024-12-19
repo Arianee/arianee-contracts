@@ -40,5 +40,39 @@ fi
 forge_params=(--rpc-url "$RPC_URL" --evm-version "$EVM_VERSION" --force --gas-limit 1000000000000 "$@")
 echo "Forge parameters: ${forge_params[@]}"
 
+# Set environment variables
 export CHAIN_ID=$chainId
+
+broadcast=false
+for arg in "$@"; do
+  if [ "$arg" == "--broadcast" ]; then
+    broadcast=true
+    break
+  fi
+done
+export BROADCAST=$broadcast
+
+# Run the forge script
+start_time=$(date +%s)
 forge script "$script" "${forge_params[@]}"
+end_time=$(date +%s)
+elapsed_time=$((end_time - start_time))
+echo "Elapsed time: $elapsed_time seconds"
+
+# After script completion, check for `prover.pid` and stop the prover if it exists
+# This can happen if the script is stopped before it can stop the prover
+pid_file="prover.pid"
+
+if [ -f "$pid_file" ]; then
+  echo -e "\nDetected '${pid_file}'. Attempting to stop prover..."
+  
+  # Optionally, you can verify if the process is running before attempting to stop
+  pid=$(cat "$pid_file")
+  if ps -p "$pid" > /dev/null 2>&1; then
+    echo "Stopping prover process with PID: $pid"
+    npm run prover stop
+  else
+    echo "No running prover process found with PID: $pid. Removing stale ${pid_file}."
+    rm "$pid_file"
+  fi
+fi

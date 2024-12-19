@@ -110,7 +110,7 @@ contract ArianeeCreditHistory is
         uint256 _quantity
     ) external onlyRole(ROLE_ARIANEE_STORE) returns (uint256) {
         ArianeeCreditHistoryStorageV0 storage $ = _getArianeeCreditHistoryStorageV0();
-        require($.addrToTypeToTotalCredit[_spender][_type] > 0, "ArianeeCreditHistory: Unknown credit type");
+        require($.addrToTypeToTotalCredit[_spender][_type] > 0, "ArianeeCreditHistory: No left credit of this type");
 
         uint256 _index = $.addrToTypeToCreditHistoryIndex[_spender][_type];
         require(
