@@ -59,12 +59,6 @@ contract ArianeeSmartAssetV1 is ArianeeSmartAsset {
         $v1._mapping_uint256_bytes[123] = abi.encode(456);
     }
 
-    function setBaseURI(
-        string calldata _newBaseURI
-    ) public onlyRole(ROLE_ADMIN) {
-        _setBaseURI(_newBaseURI);
-    }
-
     function getString() public view returns (string memory) {
         return _getArianeeSmartAssetStorageV1()._string;
     }
