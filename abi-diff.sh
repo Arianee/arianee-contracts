@@ -34,15 +34,6 @@ if [ ! -f "$new_abi" ]; then
     exit 1
 fi
 
-# Check if 'jq' is installed
-if ! command -v jq &> /dev/null; then
-    echo "Error: 'jq' is not installed. Please install it to proceed"
-    echo "You can install it using:"
-    echo "  sudo apt-get install jq          # On Debian/Ubuntu"
-    echo "  brew install jq                  # On macOS with Homebrew"
-    exit 1
-fi
-
 # Check if 'gawk' is installed; if not, fallback to 'awk'
 if command -v gawk &> /dev/null; then
     AWK_CMD="gawk"
