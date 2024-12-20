@@ -120,7 +120,7 @@ Identify the "run" file for the deployment you want to verify and use the follow
 _Only the `--file` flag is required. The other flags are optional._
 
 ```shell
-$ npm run verify --file <path_to_broadcast_json> [--tx-index <transaction_index>] [--verifier <verifier>] [--verifier-url <verifier-url>] [--compiler-version <compiler-version>] [--optimizer-runs <runs>] [--via-ir <true|false>] [--evm-version <version>] [--debug]
+$ npm run verify -- --file <path_to_broadcast_json> [--tx-index <transaction_index>] [--verifier <verifier>] [--verifier-url <verifier-url>] [--compiler-version <compiler-version>] [--optimizer-runs <runs>] [--via-ir <true|false>] [--evm-version <version>] [--debug]
 ```
 
 ### ABIs
@@ -135,6 +135,15 @@ $ npm run gen:abi src/V0
 ```
 
 It will generate ABIs for contracts matching `<path_to_contracts>` under the `abi` directory.
+
+To check new ABIs versions compatibility against legacy (or any other) versions, you can use the following command:
+
+```shell
+# ./abi-diff.sh <legacy_abi_json_path> <new_abi_json_path>
+$ ./abi-diff.sh abi/Legacy/ArianeeCreditHistory.json abi/V0/ArianeeStore/ArianeeCreditHistory.json
+```
+
+It will output the differences between the two ABIs.
 
 ### Anvil
 
