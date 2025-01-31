@@ -35,7 +35,7 @@ You can access the reports by following the links below:
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/download/) _(v20.3.0)_
-- [Forge CLI](https://book.getfoundry.sh/getting-started/installation) _(v0.2.0)_
+- [Forge CLI](https://book.getfoundry.sh/getting-started/installation) _(v0.3.0)_
 - [JQ](https://stedolan.github.io/jq/download/) _(v1.7.1)_
 
 ### Installation

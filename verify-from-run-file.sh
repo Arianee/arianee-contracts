@@ -4,20 +4,28 @@
 # ./verify-from-run-file.sh --file <path_to_broadcast_json> [--tx-index <transaction_index>] [--verifier <verifier>] [--verifier-url <verifier-url>] [--compiler-version <compiler-version>] [--optimizer-runs <runs>] [--via-ir <true|false>] [--evm-version <version>] [--debug]
 
 # Default values
+NAMESPACE_PATH=""
 BROADCAST_FILE=""
 TRANSACTION_INDEX=""
 VERIFIER="blockscout"
-VERIFIER_URL="https://testnet.explorer.etherlink.com/api/"
+# VERIFIER_URL="https://testnet.explorer.etherlink.com/api/"
+VERIFIER_URL="https://cycle-alpha.calderaexplorer.xyz/api/"
 COMPILER_VERSION="v0.8.28+commit.7893614a"
 OPTIMIZER_RUNS="200"
 VIA_IR="true"
-EVM_VERSION="shanghai"
+# EVM_VERSION="shanghai"
+EVM_VERSION="cancun"
 WATCH="true"
 DEBUG="false"
 
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
+        --ns-path)
+            NAMESPACE_PATH="$2"
+            shift
+            shift
+            ;;
         --file)
             BROADCAST_FILE="$2"
             shift
@@ -100,7 +108,7 @@ run_forge_verification() {
     # Build the arguments array for forge verify-contract
     CMD_ARGS=(
       "forge" "verify-contract"
-      "$CONTRACT_ADDR" "$CONTRACT_NAME"
+      "$CONTRACT_ADDR" "$NAMESPACE_PATH$CONTRACT_NAME"
       "--verifier" "$VERIFIER"
       "--verifier-url" "$VERIFIER_URL"
       "--compiler-version" "$COMPILER_VERSION"

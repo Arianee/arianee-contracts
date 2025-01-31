@@ -29,4 +29,7 @@ number_underscore = "thousands"
 [fuzz]
 runs = 256
 
+[rpc_endpoints]
+cycle = "https://cycle-alpha.calderachain.xyz/http"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
