@@ -3,7 +3,7 @@ version: 2.1
 executors:
   foundry-executor:
     docker:
-      - image: ghcr.io/foundry-rs/foundry:latest
+      - image: ghcr.io/foundry-rs/foundry:v0.3.0
 
 jobs:
   test:
