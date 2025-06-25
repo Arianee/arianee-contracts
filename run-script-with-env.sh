@@ -37,7 +37,7 @@ if [ -z "$EVM_VERSION" ]; then
 fi
 
 # Output additional forge parameters
-forge_params=(--rpc-url "$RPC_URL" --evm-version "$EVM_VERSION" --force --gas-limit 1000000000000 "$@")
+forge_params=(--rpc-url "$RPC_URL" --evm-version "$EVM_VERSION" --force  "$@")
 echo "Forge parameters: ${forge_params[@]}"
 
 # Set environment variables

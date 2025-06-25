@@ -105,6 +105,7 @@ contract ArianeeSmartAssetV1Test is ArianeeSmartAssetTest {
         // Take a look at the `beforeTestSetup` function to see how we handle this
     }
 
+
     function test_a_displayAddresses() public view virtual override {
         super.test_a_displayAddresses();
         console.log("ArianeeSmartAssetV1Impl: %s", arianeeSmartAssetV1ImplAddr);

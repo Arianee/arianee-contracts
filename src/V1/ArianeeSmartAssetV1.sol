@@ -9,6 +9,9 @@ import { ArianeeSmartAsset } from "../V0/ArianeeSmartAsset.sol";
 // Proxy Utils
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
+
+
+
 /**
  * @title ArianeeSmartAssetV1
  * @notice This contract is the ERC721 implementation of the Arianee Protocol. An ERC721 token inside the Arianee ecosystem is called a SmartAsset.
@@ -44,6 +47,7 @@ contract ArianeeSmartAssetV1 is ArianeeSmartAsset {
         _disableInitializers();
     }
 
+    /// @custom:oz-upgrades-validate-as-initializer 
     function initializeV1(
         address _additionalAdmin,
         string calldata _newBaseURI,

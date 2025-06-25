@@ -144,11 +144,10 @@ contract ArianeeSmartAsset is
     }
 
     function initialize(address _initialAdmin, address _storeAddress, address _whitelistAddress) public initializer {
-        __Pausable_init_unchained();
         __ERC721_init_unchained(ERC721_NAME, ERC721_SYMBOL);
-
+        __ERC721Pausable_init();
         _grantRole(ROLE_ADMIN, _initialAdmin);
-        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);
+        _grantRole(ROLE_ARIANEE_STORE, _storeAddress);    
 
         ArianeeSmartAssetStorageV0 storage $ = _getArianeeSmartAssetStorageV0();
         $.store = IArianeeStore(_storeAddress);
